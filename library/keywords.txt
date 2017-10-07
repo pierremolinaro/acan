@@ -1,0 +1,25 @@
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ACANSettings	KEYWORD1
+CANMessage	KEYWORD1
+ACANPrimaryFilter	KEYWORD1
+ACANSecondaryFilter	KEYWORD1
+ACAN	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+end	KEYWORD2
+tryToSend	KEYWORD2
+available	KEYWORD2
+receive	KEYWORD2
+dispatchReceivedMessage	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+

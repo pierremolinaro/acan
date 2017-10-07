@@ -1,0 +1,106 @@
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+// ACAN: CAN Library for Teensy 3.1 / 3.2, 3.5, 3.6
+// https://github.com/pierremolinaro/acan
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+#include "ACANSettings.h"
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//    CAN Settings
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+static const uint32_t kCANClockFrequency = 16 * 1000 * 1000 ; // 16 MHz
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+ACANSettings::ACANSettings (const uint32_t inWhishedBitRate,
+                            const uint32_t inTolerancePPM) {
+  if (mWhishedBitRate != inWhishedBitRate) {
+    mWhishedBitRate = inWhishedBitRate ;
+    uint32_t TQCount = 25 ; // TQCount: 5 ... 25
+    uint32_t smallestError = UINT32_MAX ;
+    uint32_t bestBRP = 256 ; // Setting for slowest bit rate
+    uint32_t bestTQCount = 25 ; // Setting for slowest bit rate
+    uint32_t BRP = kCANClockFrequency / inWhishedBitRate / TQCount ;
+  //--- Loop for finding best BRP and best TQCount
+    while ((TQCount >= 5) && (BRP <= 256)) {
+    //--- Compute error using BRP (caution: BRP should be > 0)
+      if (BRP > 0) {
+        const uint32_t error = (kCANClockFrequency / TQCount / BRP) - inWhishedBitRate ; // error is always >= 0
+        if (error < smallestError) {
+          smallestError = error ;
+          bestBRP = BRP ;
+          bestTQCount = TQCount ;
+        }
+      }
+    //--- Compute error using BRP+1 (caution: BRP+1 should be <= 256)
+      if (BRP < 256) {
+        const uint32_t error = inWhishedBitRate - (kCANClockFrequency / TQCount / (BRP + 1)) ; // error is always >= 0
+        if (error < smallestError) {
+          smallestError = error ;
+          bestBRP = BRP + 1 ;
+          bestTQCount = TQCount ;
+        }
+      }
+    //--- Continue with next value of TQCount
+      TQCount -- ;
+      BRP = kCANClockFrequency / inWhishedBitRate / TQCount ;
+    }
+  //--- Set the BRP
+    mBitRatePrescaler = (uint16_t) bestBRP ;
+  //--- Compute PS2
+    const uint32_t PS2 = 1 + 2 * bestTQCount / 7 ; // Always 2 <= PS2 <= 8
+    mPhaseSegment2 = (uint8_t) PS2 ;
+  //--- Compute the remaining number of TQ once PS2 and SyncSeg are removed
+    const uint32_t propSegmentPlusPhaseSegment1 = bestTQCount - PS2 - 1 /* Sync Seg */ ;
+  //--- Set PS1 to half of remaining TQCount
+    const uint32_t PS1 = propSegmentPlusPhaseSegment1 / 2 ; // Always 1 <= PS1 <= 8
+    mPhaseSegment1 = (uint8_t) PS1 ;
+  //--- Set PS to what is left
+    mPropagationSegment = (uint8_t) (propSegmentPlusPhaseSegment1 - PS1) ; // Always 1 <= PropSeg <= 8
+  //--- Set RJW to PS2
+    mRJW = (mPhaseSegment2 >= 4) ? 4 : mPhaseSegment2 ; // Always 2 <= RJW <= 4, and RJW <= mPhaseSegment2
+  //--- Triple sampling ?
+    mTripleSampling = (inWhishedBitRate <= 125000) && (mPhaseSegment1 >= 2) ;
+  //--- Final check of the configuration
+    const uint32_t W = bestTQCount * mWhishedBitRate * mBitRatePrescaler ;
+    const uint64_t diff = (kCANClockFrequency > W) ? (kCANClockFrequency - W) : (W - kCANClockFrequency) ;
+    const uint64_t ppm = (uint64_t) (1000 * 1000) ;
+    mBitSettingOk = (diff * ppm) <= (((uint64_t) W) * inTolerancePPM) ;
+  }
+} ;
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+uint32_t ACANSettings::actualBitRate (void) const {
+  const uint32_t TQCount = 1 /* Sync Seg */ + mPropagationSegment + mPhaseSegment1 + mPhaseSegment2 ;
+  return kCANClockFrequency / mBitRatePrescaler / TQCount ;
+}
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+bool ACANSettings::exactBitRate (void) const {
+  const uint32_t TQCount = 1 /* Sync Seg */ + mPropagationSegment + mPhaseSegment1 + mPhaseSegment2 ;
+  return kCANClockFrequency == (mBitRatePrescaler * mWhishedBitRate * TQCount) ;
+}
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+uint32_t ACANSettings::ppmFromWishedBitRate (void) const {
+  const uint32_t TQCount = 1 /* Sync Seg */ + mPropagationSegment + mPhaseSegment1 + mPhaseSegment2 ;
+  const uint32_t W = TQCount * mWhishedBitRate * mBitRatePrescaler ;
+  const uint64_t diff = (kCANClockFrequency > W) ? (kCANClockFrequency - W) : (W - kCANClockFrequency) ;
+  const uint64_t ppm = (uint64_t) (1000 * 1000) ;
+  return (uint32_t) ((diff * ppm) / W) ;
+}
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+uint32_t ACANSettings::samplePointFromBitStart (void) const {
+  const uint32_t TQCount = 1 /* Sync Seg */ + mPropagationSegment + mPhaseSegment1 + mPhaseSegment2 ;
+  const uint32_t samplePoint = 1 /* Sync Seg */ + mPropagationSegment + mPhaseSegment1 - mTripleSampling ;
+  const uint32_t partPerCent = 100 ;
+  return (samplePoint * partPerCent) / TQCount ;
+}
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
