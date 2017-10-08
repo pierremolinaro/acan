@@ -1,6 +1,10 @@
 ## Mac hidden files:
 .DS_Store
 
+## Other files
+test-ACANSettings-on-desktop/molican-settings.xcodeproj/xcuserdata/
+test-ACANSettings-on-desktop/molican-settings.xcodeproj/project.xcworkspace/
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
