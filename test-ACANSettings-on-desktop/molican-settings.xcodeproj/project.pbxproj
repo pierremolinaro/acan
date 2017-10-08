@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		CF1F82AE1F89425D0051F6C9 /* ACANSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CF1F82AC1F89425D0051F6C9 /* ACANSettings.cpp */; };
+		CFADEDB11F8955E4003EBE77 /* ACANSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFADEDAF1F8955E4003EBE77 /* ACANSettings.cpp */; };
 		CFF3C2651F7FF7BD00B49167 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CFF3C2641F7FF7BD00B49167 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -25,8 +25,8 @@
 
 /* Begin PBXFileReference section */
 		CF1A3C9B1F85095500F904B8 /* set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = set.h; sourceTree = "<group>"; };
-		CF1F82AC1F89425D0051F6C9 /* ACANSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ACANSettings.cpp; path = ../../library/src/ACANSettings.cpp; sourceTree = "<group>"; };
-		CF1F82AD1F89425D0051F6C9 /* ACANSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ACANSettings.h; path = ../../library/src/ACANSettings.h; sourceTree = "<group>"; };
+		CFADEDAF1F8955E4003EBE77 /* ACANSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ACANSettings.cpp; path = "../../teensyduino-library/ACAN/src/ACANSettings.cpp"; sourceTree = "<group>"; };
+		CFADEDB01F8955E4003EBE77 /* ACANSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ACANSettings.h; path = "../../teensyduino-library/ACAN/src/ACANSettings.h"; sourceTree = "<group>"; };
 		CFF3C2611F7FF7BD00B49167 /* molican-settings */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "molican-settings"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFF3C2641F7FF7BD00B49167 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -61,8 +61,8 @@
 		CFF3C2631F7FF7BD00B49167 /* molican-settings */ = {
 			isa = PBXGroup;
 			children = (
-				CF1F82AC1F89425D0051F6C9 /* ACANSettings.cpp */,
-				CF1F82AD1F89425D0051F6C9 /* ACANSettings.h */,
+				CFADEDAF1F8955E4003EBE77 /* ACANSettings.cpp */,
+				CFADEDB01F8955E4003EBE77 /* ACANSettings.h */,
 				CF1A3C9B1F85095500F904B8 /* set.h */,
 				CFF3C2641F7FF7BD00B49167 /* main.cpp */,
 			);
@@ -127,7 +127,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CFF3C2651F7FF7BD00B49167 /* main.cpp in Sources */,
-				CF1F82AE1F89425D0051F6C9 /* ACANSettings.cpp in Sources */,
+				CFADEDB11F8955E4003EBE77 /* ACANSettings.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

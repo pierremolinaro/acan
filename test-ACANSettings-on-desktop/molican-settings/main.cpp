@@ -29,7 +29,7 @@ static void compute (const uint32_t inWhishedBaudRate) {
   cout << "  Actual baud rate: " << settings.actualBitRate () << " bit/s" << endl ;
   cout << "  ppm: " << settings.ppmFromWishedBitRate () << endl ;
   cout << "  Sample Point: " << settings.samplePointFromBitStart () << "%" << endl ;
-  cout << "  Bit setting ok: " << (settings.mBitSettingOk ? "yes" : "no") << endl ;
+  cout << "  Bit setting ok: " << (settings.mBitConfigurationClosedToWishedRate ? "yes" : "no") << endl ;
 }
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
@@ -40,24 +40,9 @@ static void exploreAllSettings (void) {
   const uint32_t end = 20 * 1000 * 1000 ; // 20 Mbit/s
   for (uint32_t br = start ; br <= end ; br ++) {
     ACANSettings settings (br) ;
-    bool ok = (settings.mBitRatePrescaler >= 1) && (settings.mBitRatePrescaler <= 256) ;
-    if (ok) {
-      ok = (settings.mPropagationSegment >= 1) && (settings.mPropagationSegment <= 8) ;
-    }
-    if (ok) {
-      ok = (settings.mPhaseSegment1 >= 1) && (settings.mPhaseSegment1 <= 8) ;
-    }
-    if (ok) {
-      ok = (settings.mPhaseSegment2 >= 2) && (settings.mPhaseSegment2 <= 8) ;
-    }
-    if (ok) {
-      ok = (settings.mRJW >= 1) && (settings.mRJW <= 4) && (settings.mRJW <= settings.mPhaseSegment2) ;
-    }
-    if (ok) {
-      ok = !settings.mTripleSampling || (settings.mPhaseSegment1 >= 2) ;
-    }
-    if (!ok) {
-      cout << "Error for br : " << br << endl ;
+    const uint32_t errorCode = settings.checkCANBitSettingConsistency () ;
+    if (errorCode != 0) {
+      cout << "Error 0x" << hex << errorCode << " for br : " << dec << br << endl ;
       exit (1) ;
     }
   }
@@ -70,7 +55,7 @@ static void allCorrectSettings (const uint32_t inStep, Set <uint32_t> & ioValidS
   cout << "All valid settings" << endl ;
   for (uint32_t br = 1000 ; br < 20000000 ; br += inStep) {
     ACANSettings settings (br) ;
-    if (settings.mBitSettingOk) {
+    if (settings.mBitConfigurationClosedToWishedRate) {
       ioValidSettingSet.insert (br) ;
     }
   }
@@ -85,7 +70,7 @@ static void allExactSettings (Set <uint32_t> & ioExactSettingSet) {
   cout << "All exact settings" << endl ;
   for (uint32_t br = 1000 ; br < 20000000 ; br ++) {
     ACANSettings settings (br, 0) ;
-    if (settings.mBitSettingOk) {
+    if (settings.mBitConfigurationClosedToWishedRate) {
       ioExactSettingSet.insert (br) ;
     }
   }
@@ -115,10 +100,11 @@ static void exhaustiveSearchOfAllExactSettings (Set <uint32_t> & ioExactSettingS
 int main (int /* argc */, const char * /* argv */ []) {
 //  compute (250 * 1000) ;
 //  compute (125 * 1000) ;
-//  compute (500 * 1000) ;
+  compute (500 * 1000) ;
 //  compute (1000 * 1000) ;
 //  compute (10 * 1000) ;
 //  compute (842 * 1000) ;
+  compute (440 * 1000) ;
 //  compute (821 * 1000) ;
 //  compute (2000) ;
 //  compute (20 * 1000 * 1000) ;

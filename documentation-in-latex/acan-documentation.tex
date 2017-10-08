@@ -195,6 +195,14 @@
 % \refSubsectionPage{label-section} ---> "section x.y page n"   où x.y est le n° de la sub-section
 \newcommand\refSubsectionPage[1]{\hyperref[subsec:#1]{section \ref*{subsec:#1} page \pageref{subsec:#1}}}
 
+%------------------------------------------------------------------------------------------ RÉFÉRENCES À UNE SUB-SUB-SECTION
+% Au lieu d'écrire \subsubsection{titre-section}, on écrit \subsubsectionLabel{titre-section}{label-section}
+\newcommand \subsubsectionLabel[2]{\subsubsection{#1}\label{subsubsec:#2}}
+
+
+% \refSubsubsectionPage{label-section} ---> "section x.y page n"   où x.y est le n° de la sub-sub-section
+\newcommand\refSubsubsectionPage[1]{\hyperref[subsubsec:#1]{section \ref*{subsubsec:#1} page \pageref{subsubsec:#1}}}
+
 %-----------------------------------------------------------------------------------------------------------------------*
 %                                                                                                                       *
 %   R É F É R E N C E S   À   U N   T A B L E A U                                                                       *
@@ -265,7 +273,7 @@
 %--- Gérer de l'indentation dans la table des matières
 \cftsetindents{section}{0em}{2em}
 \cftsetindents{subsection}{2em}{3em}
-%\cftsetindents{subsubsection}{3.0em}{5.5em}
+\cftsetindents{subsubsection}{4em}{5em}
 %\cftsetindents{table}{0.0em}{3.0em}
 %\cftsetindents{figure}{0.0em}{3.0em}
 
@@ -291,7 +299,7 @@
 
 \title{\bf \Huge{ACAN library for Teensy 3.1 / 3.2, 3.5, 3.6\\Version 1.0.0}}
 \author{Pierre Molinaro}
-\date {October 7, 2017}
+\date {October xxx, 2017}
 
 \maketitle
 
@@ -314,7 +322,7 @@
 \begin{center}
   \begin{tabular}{lll}
     \textbf{Version} & \textbf{Date} & \textbf{Comment}\\
-    1.0.0 & October 7, 2017 & Initial release \\
+    1.0.0 & October xxx, 2017 & Initial release \\
   \end{tabular}
 \end{center}
 
@@ -489,7 +497,7 @@ void loop () {
 
 {\bf Line 6.} Configuration is a four-step operation. This line is the first step. It instanciates the \texttt{settings} object of the \texttt{ACANSettings} class. The constructor has one parameter: the wished CAN bit rate. It returns a \texttt{settings} object fully initialized with CAN bit settings for the wished bit rate, and default values for other configuration properties.
 
-{\bf Lines 7 and 8.} This is the second step. You can override the values of the properties of \texttt{settings} object. Here, the \texttt{mLoopBackMode} and \texttt{mSelfReceptionMode} properties are set to \texttt{true} -- they are \texttt{false} by default. Theses two properties fully enables \emph{loop back}, that is you can run this demo sketch even it you have no connection to a physical CAN network. The \refSectionPage{propertiesMoliCanSettings} lists all properties you can override.
+{\bf Lines 7 and 8.} This is the second step. You can override the values of the properties of \texttt{settings} object. Here, the \texttt{mLoopBackMode} and \texttt{mSelfReceptionMode} properties are set to \texttt{true} -- they are \texttt{false} by default. Theses two properties fully enables \emph{loop back}, that is you can run this demo sketch even it you have no connection to a physical CAN network. The \refSubsectionPage{propertiesACanSettings} lists all properties you can override.
 
 {\bf Line 9.} This is the third step, configuration of the \texttt{ACAN::can0} driver with \texttt{settings} values. You cannot change the \texttt{ACAN::can0} name -- see \refSectionPage{driverInstances}. The driver is configured for being able to send any (standard / extended, data / remote) frame, and to receive all (standard / extended, data / remote) frames. If you want to define reception filters, see \refSectionPage{primaryFilters} and  \refSectionPage{secondaryFilters}.
 
@@ -1473,9 +1481,9 @@ void loop () {
 You can use this function for maintaining statitistics about receiver filter matches.
 
 
-\sectionLabel{The \texttt{begin} method reference}{beginMethodReference}
+\sectionLabel{The \texttt{ACAN::begin} method reference}{beginMethodReference}
 
-\subsection{The \texttt{begin} method prototype}
+\subsection{The \texttt{ACAN::begin} method prototype}
 
 The \texttt{begin} method prototype is:
 { \small\begin{lstlisting}[language=c++]
@@ -1525,31 +1533,33 @@ The \texttt{begin} method returns an error code. The value \texttt{0} denotes no
   \small
   \onehalfspacing
   \centering
-  \begin{tabular}{llllllllll}
-    \multicolumn{8}{c}{\textbf{Error Codes}} & \textbf{Comment} & \textbf{Link}\\
-    31 -- 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 & & \\
-    \texttt{0} ...  \texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} & No error & \\
-    \texttt{0} ...  \texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{1} & CAN Bit setting configuration error & \refSubsectionPage{CANBitConfigError}\\
-    \texttt{0} ...  \texttt{0} &\texttt{x}&\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{1} &\texttt{0} & Too much primary filters & \refSubsectionPage{tooMuchPrimaryFiltersError}\\
-    \texttt{0} ...  \texttt{0} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{1} &\texttt{x} &\texttt{0} & Primary filter conformance error &  \refSubsectionPage{primaryFilterConformanceError}\\
-    \texttt{0} ...  \texttt{0} &\texttt{x}&\texttt{x} &\texttt{x} &\texttt{1} &\texttt{x} &\texttt{x} &\texttt{0} & Too much secondary filters & \refSubsectionPage{tooMuchSecondaryFiltersError}\\
-    \texttt{0} ...  \texttt{0} &\texttt{x}&\texttt{x} &\texttt{1} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{0} & Secondary filter conformance error &  \refSubsectionPage{secondaryFilterConformanceError}\\
-    \texttt{0} ...  \texttt{0} &\texttt{x}&\texttt{1} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{0} & \texttt{ACAN::can1} has no Tx alternate pin & \refSubsectionPage{noAlternateTxPinError}\\
-    \texttt{0} ...  \texttt{0} &\texttt{1}&\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{0} & \texttt{ACAN::can1} has no Rx alternate pin & \refSubsectionPage{noAlternateRxPinError} \\
+  \begin{tabular}{lllllllllll}
+    \multicolumn{9}{c}{\textbf{Error Codes}} & \textbf{Comment} & \textbf{Link}\\
+    31 -- 8 & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 & & \\
+    \texttt{0} ...  \texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} & No error & \\
+    \texttt{0} ...  \texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{1} & CAN Bit configuration too far from wished bit rate & \refSubsubsectionPage{CANBitTooFarError}\\
+    \texttt{0} ...  \texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{0} &\texttt{1} &\texttt{0} & Inconsistent CAN Bit configuration & \refSubsubsectionPage{CANBitInconsistentConfigError}\\
+    \texttt{0} ...  \texttt{0} &\texttt{x}&\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{1} &\texttt{0} &\texttt{0} & Too much primary filters & \refSubsubsectionPage{tooMuchPrimaryFiltersError}\\
+    \texttt{0} ...  \texttt{0} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{1} &\texttt{x} &\texttt{0} &\texttt{0} & Primary filter conformance error &  \refSubsectionPage{primaryFilterConformanceError}\\
+    \texttt{0} ...  \texttt{0} &\texttt{x}&\texttt{x} &\texttt{x} &\texttt{1} &\texttt{x} &\texttt{x} &\texttt{0} &\texttt{0} & Too much secondary filters & \refSubsubsectionPage{tooMuchSecondaryFiltersError}\\
+    \texttt{0} ...  \texttt{0} &\texttt{x}&\texttt{x} &\texttt{1} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{0} &\texttt{0} & Secondary filter conformance error &  \refSubsubsectionPage{secondaryFilterConformanceError}\\
+    \texttt{0} ...  \texttt{0} &\texttt{x}&\texttt{1} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{0} &\texttt{0} & \texttt{ACAN::can1} has no Tx alternate pin & \refSubsubsectionPage{noAlternateTxPinError}\\
+    \texttt{0} ...  \texttt{0} &\texttt{1}&\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{x} &\texttt{0} &\texttt{0} & \texttt{ACAN::can1} has no Rx alternate pin & \refSubsubsectionPage{noAlternateRxPinError} \\
   \end{tabular}
-  \caption{The \texttt{begin} method error codes}
+  \caption{The \texttt{ACAN::begin} method error codes}
   \labelTableau{beginErrorCode}
 \end{table}
 
 The \texttt{ACAN} class defines bit error masks as public static constant properties: 
 { \small\begin{lstlisting}[language=c++]
-public: static const uint32_t kCANBitConfigurationErrorMask       = (1 << 0) ;
-public: static const uint32_t kTooMuchPrimaryFiltersErrorMask     = (1 << 1) ;
-public: static const uint32_t kNotConformPrimaryFilterErrorMask   = (1 << 2) ;
-public: static const uint32_t kTooMuchSecondaryFiltersErrorMask   = (1 << 3) ;
-public: static const uint32_t kNotConformSecondaryFilterErrorMask = (1 << 4) ;
-public: static const uint32_t kNoAlternateTxPinForCan1ErrorMask   = (1 << 5) ;
-public: static const uint32_t kNoAlternateRxPinForCan1ErrorMask   = (1 << 6) ;
+public: static const uint32_t kCANBitConfigurationTooFarFromWishedBitRate = 1 << 0 ;
+public: static const uint32_t kCANBitInconsistentConfiguration            = 1 << 1 ;
+public: static const uint32_t kTooMuchPrimaryFilters                      = 1 << 2 ;
+public: static const uint32_t kNotConformPrimaryFilter                    = 1 << 3 ;
+public: static const uint32_t kTooMuchSecondaryFilters                    = 1 << 4 ;
+public: static const uint32_t kNotConformSecondaryFilter                  = 1 << 5 ;
+public: static const uint32_t kNoAlternateTxPinForCan1                    = 1 << 6 ;
+public: static const uint32_t kNoAlternateRxPinForCan1                    = 1 << 7 ;
 \end{lstlisting}}
 
 For example, you can write:
@@ -1559,29 +1569,77 @@ const uint32_t errorCode = ACAN::can0.begin (settings,
                                              secondaryFilters, secondaryFilterCount) ;
 if (errorCode != 0) {
   // Error(s)
-  if (errorCode & ACAN::kTooMuchPrimaryFiltersErrorMask) {
+  if (errorCode & ACAN::kTooMuchPrimaryFilters) {
     // Error: too much primary filters
   }
   ...
 }
 \end{lstlisting}}
 
-\subsectionLabel{CAN Bit setting configuration error}{CANBitConfigError}
+\subsubsectionLabel{CAN Bit setting too far from wished rate}{CANBitTooFarError}
 
-This error is raised when the \texttt{mBitSettingOk} of the \texttt{settings} object is false. This means that the \texttt{ACANSettings} constructor cannot compute the CAN bit setting for the given bit rate. When the \texttt{begin} is called with \texttt{settings.mBitSettingOk} false, this error is reported. For example:
+This error is raised when the \texttt{mBitConfigurationClosedToWishedRate} of the \texttt{settings} object is false. This means that the \texttt{ACANSettings} constructor cannot compute a CAN bit configuration close enough to the wished bit rate. When the \texttt{begin} is called with \texttt{settings.mBitConfigurationClosedToWishedRate} false, this error is reported. For example:
 
 { \small\begin{lstlisting}[language=c++]
 void setup () {
   ACANSettings settings (1) ; // 1 bit/s !!!
-  // here, settings.mBitSettingOk is false
+  // Here, settings.mBitConfigurationClosedToWishedRate is false
   const uint32_t errorCode = ACAN::can0.begin (settings) ;
-  // here, errorCode is equal to ACAN::kCANBitConfigurationErrorMask, i.e. 1
+  // Here, errorCode == ACAN::kCANBitConfigurationTooFarFromWishedBitRateErrorMask
 }
 \end{lstlisting}}
 
-This error is a fatal error, the driver and the FlexCAN module are not configured. See \refSectionPage{CANbitSettings} for a discussion about CAN bit setting computation.
+This error is a fatal error, the driver and the FlexCAN module are not configured. See \refSubsectionPage{CANbitSettings} for a discussion about CAN bit setting computation.
 
-\subsectionLabel{Too much primary filters error}{tooMuchPrimaryFiltersError}
+
+\subsubsectionLabel{CAN Bit inconsistent configuration error}{CANBitInconsistentConfigError}
+
+This error is raised when you have changed the CAN bit properties (\texttt{mBitRatePrescaler}, \texttt{mPropagationSegment}, \texttt{mPhaseSegment1}, \texttt{mPhaseSegment2}, \texttt{mRJW}), and one or more resulting values are inconsistent. See \refSubsectionPage{checkCANBitSettingConsistency}.
+
+%The constraints are:
+%\begin{align*}
+%1 & \leqslant \texttt{mBitRatePrescaler} \leqslant 256 \\
+%1 & \leqslant \texttt{mRJW} \leqslant 4 \\
+%1 & \leqslant \texttt{mPropagationSegment} \leqslant 8 \\
+%\text{Single sampling: }1 & \leqslant \texttt{mPhaseSegment1} \leqslant 8\\
+%\text{Triple sampling: }2 & \leqslant \texttt{mPhaseSegment1} \leqslant 8\\
+%2 & \leqslant \texttt{mPhaseSegment2} \leqslant 8 \\
+%\texttt{mRJW} &\leqslant \texttt{mPhaseSegment2}
+%\end{align*}
+%
+%Resulting bit rate is given by:
+%{\small
+%\begin{align*}
+%\text{Actual bit rate} & = \frac{16~\text{MHz}}{\texttt{mBitRatePrescaler} \cdot (1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1} + \texttt{mPhaseSegment2})}
+%\end{align*}
+%}
+%
+%And sampling point (in per-cent unit) are given by:
+%{\small
+%\begin{align*}
+%\text{Sampling point {\it(single sampling)}} & = 100 \cdot \frac{1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1}}{1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1} + \texttt{mPhaseSegment2}}  \\
+%  & \\
+%\text{Sampling first point {\it(triple sampling)}} & = 100 \cdot \frac{\texttt{mPropagationSegment} + \texttt{mPhaseSegment1}}{1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1} + \texttt{mPhaseSegment2}}
+%\end{align*}
+%}
+%
+%does  of the \texttt{settings} object is false. This means that the \texttt{ACANSettings} constructor cannot compute a CAN bit  for the given bit rate. When the \texttt{begin} is called with \texttt{settings.mBitConfigurationClosedToWishedRate} false, this error is reported. For example:
+%
+%{ \small\begin{lstlisting}[language=c++]
+%void setup () {
+%  ACANSettings settings (1) ; // 1 bit/s !!!
+%  // here, settings.mBitConfigurationClosedToWishedRate is false
+%  const uint32_t errorCode = ACAN::can0.begin (settings) ;
+%  // here, errorCode is equal to ACAN::kCANBitConfigurationTooFarFromWishedBitRateErrorMask, i.e. 1
+%}
+%\end{lstlisting}}
+%
+%This error is a fatal error, the driver and the FlexCAN module are not configured. See \refSubsectionPage{CANbitSettings} for a discussion about CAN bit setting computation.
+
+
+
+
+\subsubsectionLabel{Too much primary filters error}{tooMuchPrimaryFiltersError}
 
 The number of \emph{primary filters} is limited. See \refSectionPage{FlexCANconfiguration} for getting the number of \emph{primary filters} for each configuration, and for changing default value.
 
@@ -1590,7 +1648,7 @@ The number of \emph{primary filters} is limited. See \refSectionPage{FlexCANconf
 One or several primary filters do not conform: see \refSubsectionPage{primaryFilterConformance}. Comment out primary filter definitions until finding the faultly definition.
 
 
-\subsectionLabel{Too much secondary filters error}{tooMuchSecondaryFiltersError}
+\subsubsectionLabel{Too much secondary filters error}{tooMuchSecondaryFiltersError}
 
 The number of \emph{secondary filters} is limited. See \refSectionPage{FlexCANconfiguration} for getting the number of \emph{secondary filters} for each configuration, and for changing default value.
 
@@ -1598,40 +1656,53 @@ The number of \emph{secondary filters} is limited. See \refSectionPage{FlexCANco
 
 
 
-\subsectionLabel{Secondary filter conformance error}{secondaryFilterConformanceError}
+\subsubsectionLabel{Secondary filter conformance error}{secondaryFilterConformanceError}
 
 One or several secondary filters do not conform: see \refSubsectionPage{secondaryFilterConformance}. Comment out secondary filter definitions until finding the faultly definition.
 
 
-\subsectionLabel{No alternate Tx pin error}{noAlternateTxPinError}
+\subsubsectionLabel{No alternate Tx pin error}{noAlternateTxPinError}
 
 In the Teensy 3.6, \texttt{ACAN::can1} does not support alternate Tx pin.
 
 
-\subsectionLabel{No alternate Rx pin error}{noAlternateRxPinError}
+\subsubsectionLabel{No alternate Rx pin error}{noAlternateRxPinError}
 
 In the Teensy 3.6, \texttt{ACAN::can1} does not support alternate Rx pin.
 
 
 
-\sectionLabel{Computing the CAN bit settings}{CANbitSettings}
 
-The constructor of the \texttt{ACANSettings} has one mandatory argument: the wished bit rate. It tries to compute the CAN bit settings for this bit rate. If it succeeds, the constructed object has its \texttt{mBitSettingOk} property set to \texttt{true}, otherwise it is set to \texttt{false}. For example:
+
+
+
+
+
+
+\sectionLabel{\texttt{ACANSettings} class reference}{ACanSettingsRef}
+
+{\bf Note. } The \texttt{ACANSettings} class is not Arduino specific. You can compile it on your desktop computer with your favorite C++ compiler. 
+
+
+
+\subsectionLabel{The \texttt{ACANSettings} constructor: computation of the CAN bit settings}{CANbitSettings}
+
+The constructor of the \texttt{ACANSettings} has one mandatory argument: the wished bit rate. It tries to compute the CAN bit settings for this bit rate. If it succeeds, the constructed object has its \texttt{mBitConfigurationClosedToWishedRate} property set to \texttt{true}, otherwise it is set to \texttt{false}. For example:
 { \small\begin{lstlisting}[language=c++]
 void setup () {
   ACANSettings settings (1 * 1000 * 1000) ; // 1 Mbit/s
-  // Here, settings.mBitSettingOk is true
+  // Here, settings.mBitConfigurationClosedToWishedRate is true
   ...
 }
 \end{lstlisting}}
 
-Of course, CAN bit computation always succeeds for classical bit rates: 1 Mbit/s, 500 kbit/s, 250 kbit/s, 125 kbit/s. But CAN bit computation can also succeed for an unusual bit rate, as 842 kbit/s. You can check the result by computing actual bit rate, and the distance from the wished bit rate:
+Of course, CAN bit computation always succeeds for classical bit rates: 1 Mbit/s, 500 kbit/s, 250 kbit/s, 125 kbit/s. But CAN bit computation can also succeed for some unusual bit rates, as 842 kbit/s. You can check the result by computing actual bit rate, and the distance from the wished bit rate:
 { \small\begin{lstlisting}[language=c++]
 void setup () {
   Serial.begin (9600) ;
   ACANSettings settings (842 * 1000) ; // 842 kbit/s
-  Serial.print ("mBitSettingOk: ") ;
-  Serial.println (settings.mBitSettingOk) ; // 1 (--> is true)
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 1 (--> is true)
   Serial.print ("actual bit rate: ") ;
   Serial.println (settings.actualBitRate ()) ; //  842105 bit/s
   Serial.print ("distance: ") ;
@@ -1648,8 +1719,8 @@ By default, a wished bit rate is accepted if the distance from the computed actu
 void setup () {
   Serial.begin (9600) ;
   ACANSettings settings (842 * 1000, 100) ; // 842 kbit/s, max distance is 100 ppm
-  Serial.print ("mBitSettingOk: ") ;
-  Serial.println (settings.mBitSettingOk) ; // 0 (--> is false)
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 0 (--> is false)
   Serial.print ("actual bit rate: ") ;
   Serial.println (settings.actualBitRate ()) ; //  842105 bit/s
   Serial.print ("distance: ") ;
@@ -1658,13 +1729,13 @@ void setup () {
 }
 \end{lstlisting}}
 
-This argument does not change the CAN bit computation, it only changes the acceptance test. For example, you can specify that you want the computed actual bit to be exactly the wished bit rate:
+The second argument does not change the CAN bit computation, it only changes the acceptance test. For example, you can specify that you want the computed actual bit to be exactly the wished bit rate:
 { \small\begin{lstlisting}[language=c++]
 void setup () {
   Serial.begin (9600) ;
   ACANSettings settings (500 * 1000, 0) ; // 500 kbit/s, max distance is 0 ppm
-  Serial.print ("mBitSettingOk: ") ;
-  Serial.println (settings.mBitSettingOk) ; // 1 (--> is true)
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 1 (--> is true)
   Serial.print ("actual bit rate: ") ;
   Serial.println (settings.actualBitRate ()) ; //  500,000 bit/s
   Serial.print ("distance: ") ;
@@ -1673,7 +1744,7 @@ void setup () {
 }
 \end{lstlisting}}
 
-The fastest exact bit rate is 3,2 Mbit/s. It works when the FlexCAN module is configured in both \emph{loop back} mode (\refSubsectionPage{mLoopBackMode}) and \emph{self reception} mode (\refSubsectionPage{mSelfReceptionMode}). Note bit rates above 1 Mbit/s do not conform to the \texttt{ISO-11898}; CAN transceivers as \texttt{MCP2551} require the bit rate lower or equal to 1 Mbit/s.
+The fastest exact bit rate is 3,2 Mbit/s. It works when the FlexCAN module is configured in both \emph{loop back} mode (\refSubsubsectionPage{mLoopBackMode}) and \emph{self reception} mode (\refSubsubsectionPage{mSelfReceptionMode}). Note bit rates above 1 Mbit/s do not conform to the \texttt{ISO-11898}; CAN transceivers as \texttt{MCP2551} require the bit rate lower or equal to 1 Mbit/s.
 
 
 The slowest exact bit rate is 2.5 kbit/s. Note many CAN transceivers as the \texttt{MCP2551} provide "\emph{detection of ground fault (permanent Dominant) on TXD input}". For example, the \texttt{MCP2551} constraints the bit rate to be greater or equal to 16 kbit/s. If you want to work with slower bit rates and you need a transceiver, use one without this detection, as the \texttt{PCA82C250}.
@@ -1684,8 +1755,8 @@ In any way, the bit rate computation always gives an actual bit rate closest fro
 void setup () {
   Serial.begin (9600) ;
   ACANSettings settings (440 * 1000) ; // 440 kbit/s 
-  Serial.print ("mBitSettingOk: ") ;
-  Serial.println (settings.mBitSettingOk) ; // 0 (--> is false)
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 0 (--> is false)
   Serial.print ("actual bit rate: ") ;
   Serial.println (settings.actualBitRate ()) ; //  444,444 bit/s
   Serial.print ("distance: ") ;
@@ -1699,26 +1770,37 @@ You can get the details of the CAN bit decomposition. For example:
 { \small\begin{lstlisting}[language=c++]
 void setup () {
   Serial.begin (9600) ;
-  ACANSettings settings (500 * 1000) ; // 500 kbit/s
-  Serial.print ("mBitSettingOk: ") ;
-  Serial.println (settings.mBitSettingOk) ; // 1 (--> is true)
+  ACANSettings settings (440 * 1000) ; // 440 kbit/s 
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 0 (--> is false)
+  Serial.print ("actual bit rate: ") ;
+  Serial.println (settings.actualBitRate ()) ; //  444,444 bit/s
+  Serial.print ("distance: ") ;
+  Serial.println (settings.ppmFromWishedBitRate ()) ; // 10,100 ppm
   Serial.print ("Bit rate prescaler: ") ;
   Serial.println (settings.mBitRatePrescaler) ; // BRP = 2
   Serial.print ("Propagation segment: ") ;
-  Serial.println (settings.mPropagationSegment) ; // PropSeg = 5
+  Serial.println (settings.mPropagationSegment) ; // PropSeg = 6
   Serial.print ("Phase segment 1: ") ;
   Serial.println (settings.mPhaseSegment1) ; // PS1 = 5
   Serial.print ("Phase segment 2: ") ;
-  Serial.println (settings.mPhaseSegment2) ; // PS2 = 5
+  Serial.println (settings.mPhaseSegment2) ; // PS2 = 6
   Serial.print ("Resynchronization Jump Width: ") ;
   Serial.println (settings.mRJW) ; // RJW = 4
+  Serial.print ("Triple Sampling: ") ;
+  Serial.println (settings.mTripleSampling) ; // 0, meaning single sampling
   Serial.print ("Sample Point: ") ;
   Serial.println (settings.samplePointFromBitStart ()) ; // 68, meaning 68%
+  Serial.print ("Consistency: ") ;
+  Serial.println (settings.checkCANBitSettingConsistency ()) ; // 0, meaning Ok
   ...
 }
 \end{lstlisting}}
 
 The \texttt{samplePointFromBitStart} method returns sample point, expressed in per-cent of the bit duration from the beginning of the bit.
+
+
+Note the computation may calculate a bit decomposition too far from the wished bit rate, but it is always consistent. You can check this by calling the \texttt{checkCANBitSettingConsistency} method.
 
 You can change the property values for adapting to the particularities of your CAN network propagation time. By example, you can increment the \texttt{mPhaseSegment1} value, and decrement the \texttt{mPhaseSegment2} value in order to sample the \texttt{CAN Rx} pin later.
 
@@ -1726,36 +1808,47 @@ You can change the property values for adapting to the particularities of your C
 void setup () {
   Serial.begin (9600) ;
   ACANSettings settings (500 * 1000) ; // 500 kbit/s
-  Serial.print ("mBitSettingOk: ") ;
-  Serial.println (settings.mBitSettingOk) ; // 1 (--> is true)
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 1 (--> is true)
   settings.mPhaseSegment1 ++ ; // 5 -> 6: safe, 1 <= PS1 <= 8
   settings.mPhaseSegment2 -- ; // 5 -> 4: safe, 2 <= PS2 <= 8 and RJW <= PS2
   Serial.print ("Sample Point: ") ;
   Serial.println (settings.samplePointFromBitStart ()) ; // 75, meaning 75%
   Serial.print ("actual bit rate: ") ;
   Serial.println (settings.actualBitRate ()) ; //  500000: ok, bit rate did not change
+  Serial.print ("Consistency: ") ;
+  Serial.println (settings.checkCANBitSettingConsistency ()) ; // 0, meaning Ok
   ...
 }
 \end{lstlisting}}
 
-Be aware to always respect CAN bit timing constraints! Theses constraints are:
+Be aware to always respect CAN bit timing consistency! The constraints are:
 
 \begin{align*}
-1 & \leqslant BRP \leqslant 256 \\
-1 & \leqslant RJW \leqslant 4 \\
-1 & \leqslant PropSeg \leqslant 8 \\
-\text{Single sampling: }1 & \leqslant PS_1 \leqslant 8\\
-\text{Triple sampling: }2 & \leqslant PS_1 \leqslant 8\\
-2 & \leqslant PS_2 \leqslant 8 \\
-RJW &\leqslant PS_2
+1 & \leqslant \texttt{mBitRatePrescaler} \leqslant 256 \\
+1 & \leqslant \texttt{mRJW} \leqslant 4 \\
+1 & \leqslant \texttt{mPropagationSegment} \leqslant 8 \\
+\text{Single sampling: }1 & \leqslant \texttt{mPhaseSegment1} \leqslant 8\\
+\text{Triple sampling: }2 & \leqslant \texttt{mPhaseSegment1} \leqslant 8\\
+2 & \leqslant \texttt{mPhaseSegment2} \leqslant 8 \\
+\texttt{mRJW} &\leqslant \texttt{mPhaseSegment2}
 \end{align*}
 
-And resulting bit rate and sampling point (in per-cent unit) are given by:
+Resulting actual bit rate is given by:
+{\small
 \begin{align*}
-\text{Actual bit rate} & = \frac{16~\text{MHz}}{BRP \cdot (1 + PropSeg + PS_1 +PS_2)} \\
-\text{Sampling point {\it(single sampling)}} & = \frac{1 + PropSeg + PS_1}{1 + PropSeg + PS_1 +PS_2} \cdot 100 \\
-\text{Sampling first point {\it(triple sampling)}} & = \frac{PropSeg + PS_1}{1 + PropSeg + PS_1 +PS_2} \cdot 100
+\text{Actual bit rate} & = \frac{16~\text{MHz}}{\texttt{mBitRatePrescaler} \cdot (1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1} + \texttt{mPhaseSegment2})}
 \end{align*}
+}
+
+And sampling point (in per-cent unit) are given by:
+{\small
+\begin{align*}
+\text{Sampling point {\it(single sampling)}} & = 100 \cdot \frac{1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1}}{1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1} + \texttt{mPhaseSegment2}}  \\
+  & \\
+\text{Sampling first point {\it(triple sampling)}} & = 100 \cdot \frac{\texttt{mPropagationSegment} + \texttt{mPhaseSegment1}}{1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1} + \texttt{mPhaseSegment2}}
+\end{align*}
+}
 
 
 
@@ -1765,62 +1858,244 @@ And resulting bit rate and sampling point (in per-cent unit) are given by:
 
 
 
-\sectionLabel{Properties of the \texttt{ACANSettings} class}{propertiesMoliCanSettings}
 
-All properties of the \texttt{ACANSettings} class are declared \texttt{public} and are initialized. The default values of properties from \texttt{mWhishedBitRate} until \texttt{mTripleSampling} corresponds to a CAN bit rate of 250,000 bit/s.
+
+
+\subsectionLabel{The \texttt{checkCANBitSettingConsistency} method}{checkCANBitSettingConsistency}
+
+This method checks the CAN bit decomposition (given by \texttt{mBitRatePrescaler}, \texttt{mPropagationSegment}, \texttt{mPhaseSegment1}, \texttt{mPhaseSegment2}, \texttt{mRJW} property values) is consistent.
+
+{ \small\begin{lstlisting}[language=c++]
+void setup () {
+  Serial.begin (9600) ;
+  ACANSettings settings (500 * 1000) ; // 500 kbit/s
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 1 (--> is true)
+  settings.mPhaseSegment1 = 0 ; // Error, mPhaseSegment1 should be >= 1 (and <= 8)
+  Serial.print ("Consistency: 0x") ;
+  Serial.println (settings.checkCANBitSettingConsistency (), HEX) ; // 0x10, meaning error
+  ...
+}
+\end{lstlisting}}
+
+The \texttt{checkCANBitSettingConsistency} method returns $0$ if CAN bit decomposition is consistent. Otherwise, the returned value is a bit field that can report several errors -- see \refTableau{checkCANBitSettingConsistencyErrorCode}.
+
+\begin{table}[htbp]
+  \newcommand\zero{\texttt{0}}
+  \newcommand\X{\texttt{x}}
+  \small
+  \onehalfspacing
+  \centering
+  \begin{tabular}{llllllllllllll}
+    \multicolumn{12}{c}{\textbf{Error Codes}} & \textbf{Error}\\
+    31 -- 11 & 10 & 9 & 8 & 7 & 6 & 5 & 4 & 3 & 2 & 1 & 0 & \\
+    \zero~...  \zero &\zero &\zero &\zero &\zero &\zero &\zero &\zero &\zero &\zero &\zero &\zero & No error \\
+    \zero~...  \zero &\X &\X &\X &\X &\X &\X &\X &\X &\X &\X &\texttt{1} & \texttt{mBitRatePrescaler} == 0\\
+    \zero~...  \zero &\X &\X &\X &\X &\X &\X &\X &\X &\X &\texttt{1}&\X & \texttt{mBitRatePrescaler} > 256\\
+    \zero~...  \zero &\X &\X &\X &\X &\X &\X &\X &\X &\texttt{1}&\X &\X & \texttt{mPropagationSegment} == 0\\
+    \zero~...  \zero &\X &\X &\X &\X &\X &\X &\X &\texttt{1}&\X &\X &\X & \texttt{mPropagationSegment} > 8\\
+    \zero~...  \zero &\X &\X &\X &\X &\X &\X &\texttt{1}&\X &\X &\X &\X & \texttt{mPhaseSegment1} == 0\\
+    \zero~...  \zero &\X &\X &\X &\X &\X &\texttt{1}&\X &\X &\X &\X &\X & \texttt{mPhaseSegment1} > 8\\
+    \zero~...  \zero &\X &\X &\X &\X &\texttt{1}&\X &\X &\X &\X &\X &\X & \texttt{mPhaseSegment2} == 0\\
+    \zero~...  \zero &\X &\X &\X &\texttt{1}&\X &\X &\X &\X &\X &\X &\X & \texttt{mPhaseSegment2} > 8\\
+    \zero~...  \zero &\X &\X &\texttt{1}&\X &\X &\X &\X &\X &\X &\X &\X & \texttt{mRJW} == 0\\
+    \zero~...  \zero &\X &\texttt{1}&\X &\X &\X &\X &\X &\X &\X &\X &\X & \texttt{mRJW} > 4\\
+    \zero~...  \zero &\texttt{1}&\X &\X &\X &\X &\X &\X &\X &\X &\X &\X & \texttt{mRJW} > \texttt{mPhaseSegment2}\\
+  \end{tabular}
+  \caption{The \texttt{ACANSettings::checkCANBitSettingConsistency} method error codes}
+  \labelTableau{checkCANBitSettingConsistencyErrorCode}
+\end{table}
+
+The \texttt{ACANSettings} class defines static constant properties that can be used as mask error:
+{ \small\begin{lstlisting}[language=c++]
+public: static const uint32_t kBitRatePrescalerIsZero           = 1 <<  0 ;
+public: static const uint32_t kBitRatePrescalerIsGreaterThan256 = 1 <<  1 ;
+public: static const uint32_t kPropagationSegmentIsZero         = 1 <<  2 ;
+public: static const uint32_t kPropagationSegmentIsGreaterThan8 = 1 <<  3 ;
+public: static const uint32_t kPhaseSegment1IsZero              = 1 <<  4 ;
+public: static const uint32_t kPhaseSegment1IsGreaterThan8      = 1 <<  5 ;
+public: static const uint32_t kPhaseSegment2IsZero              = 1 <<  6 ;
+public: static const uint32_t kPhaseSegment2IsGreaterThan8      = 1 <<  7 ;
+public: static const uint32_t kRJWIsZero                        = 1 <<  8 ;
+public: static const uint32_t kRJWIsGreaterThan4                = 1 <<  9 ;
+public: static const uint32_t kRJWIsGreaterThanPhaseSegment2    = 1 << 10 ;
+\end{lstlisting}}
+
+
+
+
+
+
+
+
+
+\subsectionLabel{The \texttt{actualBitRate} method}{actualBitRate}
+
+
+The \texttt{actualBitRate} method returns the actual bit computed from \texttt{mBitRatePrescaler}, \texttt{mPropagationSegment}, \texttt{mPhaseSegment1}, \texttt{mPhaseSegment2}, \texttt{mRJW} property values.
+
+{ \small\begin{lstlisting}[language=c++]
+void setup () {
+  Serial.begin (9600) ;
+  ACANSettings settings (440 * 1000) ; // 440 kbit/s 
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 0 (--> is false)
+  Serial.print ("actual bit rate: ") ;
+  Serial.println (settings.actualBitRate ()) ; //  444,444 bit/s
+  ...
+}
+\end{lstlisting}}
+
+{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{checkCANBitSettingConsistency}), the returned value is irrelevant.
+
+
+
+
+
+
+
+
+
+
+
+\subsectionLabel{The \texttt{exactBitRate} method}{exactBitRate}
+
+
+The \texttt{exactBitRate} method returns \texttt{true} if the actual bit rate is equal to the wished bit rate, and \texttt{false} otherwise.
+
+{ \small\begin{lstlisting}[language=c++]
+void setup () {
+  Serial.begin (9600) ;
+  ACANSettings settings (842 * 1000) ; // 842 kbit/s
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 1 (--> is true)
+  Serial.print ("actual bit rate: ") ;
+  Serial.println (settings.actualBitRate ()) ; //  842105 bit/s
+  Serial.print ("distance: ") ;
+  Serial.println (settings.ppmFromWishedBitRate ()) ; // 124 ppm
+  Serial.print ("Exact: ") ;
+  Serial.println (settings.exactBitRate ()) ; // 0 (---> false)
+  ...
+}
+\end{lstlisting}}
+
+{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{checkCANBitSettingConsistency}), the returned value is irrelevant.
+
+
+
+
+
+
+\subsectionLabel{The \texttt{ppmFromWishedBitRate} method}{ppmFromWishedBitRate}
+
+
+The \texttt{ppmFromWishedBitRate} method returns the distance from the actual bit rate to the wished bit rate, expressed in part-per-million (ppm): $1~\texttt{ppm} = 10^{-6}$. In other words, $10,000~\texttt{ppm}=1\%$.
+
+{ \small\begin{lstlisting}[language=c++]
+void setup () {
+  Serial.begin (9600) ;
+  ACANSettings settings (842 * 1000) ; // 842 kbit/s
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 1 (--> is true)
+  Serial.print ("actual bit rate: ") ;
+  Serial.println (settings.actualBitRate ()) ; //  842105 bit/s
+  Serial.print ("distance: ") ;
+  Serial.println (settings.ppmFromWishedBitRate ()) ; // 124 ppm
+  ...
+}
+\end{lstlisting}}
+
+{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{checkCANBitSettingConsistency}), the returned value is irrelevant.
+
+
+
+
+
+
+\subsectionLabel{The \texttt{samplePointFromBitStart} method}{samplePointFromBitStart}
+
+
+The \texttt{samplePointFromBitStart} method returns the distance of sample point from the start of the CAN bit, expressed in part-per-cent (ppc): $1~\texttt{ppc} = 1\% = 10^{-2}$. If triple sampling is selected, the returned value is the distance of the first sample point from the start of the CAN bit. It is a good practice to get sample point from 65\% to 80\%.
+
+{ \small\begin{lstlisting}[language=c++]
+void setup () {
+  Serial.begin (9600) ;
+  ACANSettings settings (500 * 1000) ; // 500 kbit/s
+  Serial.print ("mBitConfigurationClosedToWishedRate: ") ;
+  Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 1 (--> is true)
+  Serial.print ("Sample point: ") ;
+  Serial.println (settings.samplePointFromBitStart ()) ; // 68 --> 68%
+  ...
+}
+\end{lstlisting}}
+
+{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{checkCANBitSettingConsistency}), the returned value is irrelevant.
+
+
+
+
+
+
+\subsectionLabel{Properties of the \texttt{ACANSettings} class}{propertiesACanSettings}
+
+All properties of the \texttt{ACANSettings} class are declared \texttt{public} and are initialized (\refTableau{tablePropertiesACanSettings}). The default values of properties from \texttt{mWhishedBitRate} until \texttt{mTripleSampling} corresponds to a CAN bit rate of 250,000 bit/s.
 
 \begin{table}[htbp]
   \small
   \onehalfspacing
   \centering
-  \begin{tabular}{lllll}
+  \begin{tabular}{llllll}
     \textbf{Property}& \textbf{Type} & \textbf{Initial value} & \textbf{Comment} \\
-    \texttt{mWhishedBitRate} & \texttt{uint32\_t} & \texttt{250,000} & see \refSectionPage{CANbitSettings}\\
-    \texttt{mBitRatePrescaler} & \texttt{uint16\_t} & \texttt{4} & see \refSectionPage{CANbitSettings} (valid values: $1$ ... $256$)\\
-    \texttt{mPropagationSegment} & \texttt{uint8\_t} & \texttt{5} & see \refSectionPage{CANbitSettings} (valid values: $1$ ... $8$)\\
-    \texttt{mPhaseSegment1} & \texttt{uint8\_t} & \texttt{5} & see \refSectionPage{CANbitSettings} (valid values: $1$ ... $8$)\\
-    \texttt{mPhaseSegment2} & \texttt{uint8\_t} & \texttt{5} & see \refSectionPage{CANbitSettings} (valid values: $2$ ... $8$)\\
-    \texttt{mRJW} & \texttt{uint8\_t} & \texttt{4} & see \refSectionPage{CANbitSettings} (valid values: $1$ ... $4$)\\
-    \texttt{mTripleSampling} & \texttt{bool} & \texttt{false} & see \refSectionPage{CANbitSettings} \\
-    \texttt{mBitSettingOk} & \texttt{bool} & \texttt{true} & see \refSectionPage{CANbitSettings} \\
-    \texttt{mListenOnlyMode} & \texttt{bool} & \texttt{false} & see \refSubsectionPage{mListenOnlyMode} \\
-    \texttt{mSelfReceptionMode} & \texttt{bool} & \texttt{false} & see \refSubsectionPage{mSelfReceptionMode} \\
-    \texttt{mLoopBackMode} & \texttt{bool} & \texttt{false} & see \refSubsectionPage{mLoopBackMode} \\
-    \texttt{mConfiguration} & \texttt{tConfiguration} & \texttt{k12\_12\_Filters} & see \refSectionPage{FlexCANconfiguration} \\
-    \texttt{mUseAlternateTxPin} & \texttt{bool} & \texttt{false} & see \refSectionPage{alternatePins} \\
-    \texttt{mUseAlternateRxPin} & \texttt{bool} & \texttt{false} & see \refSectionPage{alternatePins} \\
-    \texttt{mMessageIRQPriority} & \texttt{uint8\_t} & \texttt{64} & see \refSubsectionPage{mMessageIRQPriority}\\
-    \texttt{mReceiveBufferSize} & \texttt{uint16\_t} & \texttt{32} & see \refSubsectionPage{driverReceiveBufferSize} \\
-    \texttt{mTransmitBufferSize} & \texttt{uint16\_t} & \texttt{16} & see \refSubsectionPage{driverTransmitBufferSize} \\
+    \texttt{mWhishedBitRate} & \texttt{uint32\_t} & \texttt{250,000} & See \refSubsectionPage{CANbitSettings}\\
+    \texttt{mBitRatePrescaler} & \texttt{uint16\_t} & \texttt{4} & See \refSubsectionPage{CANbitSettings} \\ % (valid values: $1$ ... $256$)\\
+    \texttt{mPropagationSegment} & \texttt{uint8\_t} & \texttt{5} & See \refSubsectionPage{CANbitSettings} \\ %(valid values: $1$ ... $8$)\\
+    \texttt{mPhaseSegment1} & \texttt{uint8\_t} & \texttt{5} & See \refSubsectionPage{CANbitSettings}\\ % (valid values: $1$ ... $8$)\\
+    \texttt{mPhaseSegment2} & \texttt{uint8\_t} & \texttt{5} & See \refSubsectionPage{CANbitSettings} \\ %(valid values: $2$ ... $8$)\\
+    \texttt{mRJW} & \texttt{uint8\_t} & \texttt{4} & See \refSubsectionPage{CANbitSettings} \\ %(valid values: $1$ ... $4$)\\
+    \texttt{mTripleSampling} & \texttt{bool} & \texttt{false} & See \refSubsectionPage{CANbitSettings} \\
+    \texttt{mBitConfigurationClosedToWishedRate} & \texttt{bool} & \texttt{true} & See \refSubsectionPage{CANbitSettings} \\
+    \texttt{mListenOnlyMode} & \texttt{bool} & \texttt{false} & See \refSubsubsectionPage{mListenOnlyMode} \\
+    \texttt{mSelfReceptionMode} & \texttt{bool} & \texttt{false} & See \refSubsubsectionPage{mSelfReceptionMode} \\
+    \texttt{mLoopBackMode} & \texttt{bool} & \texttt{false} & See \refSubsubsectionPage{mLoopBackMode} \\
+    \texttt{mConfiguration} & \texttt{tConfiguration} & \texttt{k12\_12\_Filters} & See \refSectionPage{FlexCANconfiguration} \\
+    \texttt{mUseAlternateTxPin} & \texttt{bool} & \texttt{false} & See \refSectionPage{alternatePins} \\
+    \texttt{mUseAlternateRxPin} & \texttt{bool} & \texttt{false} & See \refSectionPage{alternatePins} \\
+    \texttt{mMessageIRQPriority} & \texttt{uint8\_t} & \texttt{64} & See \refSubsubsectionPage{mMessageIRQPriority}\\
+    \texttt{mReceiveBufferSize} & \texttt{uint16\_t} & \texttt{32} & See \refSubsectionPage{driverReceiveBufferSize} \\
+    \texttt{mTransmitBufferSize} & \texttt{uint16\_t} & \texttt{16} & See \refSubsectionPage{driverTransmitBufferSize} \\
    \end{tabular}
   \caption{Properties of the \texttt{ACANSettings} class}
-  \labelTableau{tablePropertiesMoliCanSettings}
+  \labelTableau{tablePropertiesACanSettings}
 \end{table}
 
 
-\subsectionLabel{The \texttt{mListenOnlyMode} property}{mListenOnlyMode}
+\subsubsectionLabel{The \texttt{mListenOnlyMode} property}{mListenOnlyMode}
 
-This bit corresponds to the \texttt{LOM} bit of the FlexCAN \texttt{CTRL1} control register.
-
-
-
-\subsectionLabel{The \texttt{mSelfReceptionMode} property}{mSelfReceptionMode}
-
-This bit corresponds to the complement of the \texttt{SRXDIS} bit of the FlexCAN \texttt{MCR} control register.
+This boolean property corresponds to the \texttt{LOM} bit of the FlexCAN \texttt{CTRL1} control register.
 
 
 
-\subsectionLabel{The \texttt{mLoopBackMode} property}{mLoopBackMode}
+\subsubsectionLabel{The \texttt{mSelfReceptionMode} property}{mSelfReceptionMode}
 
-This bit corresponds to the \texttt{LBP} bit of the FlexCAN \texttt{CTRL1} control register.
-
-
+This boolean property corresponds to the complement of the \texttt{SRXDIS} bit of the FlexCAN \texttt{MCR} control register.
 
 
 
-\subsectionLabel{The \texttt{mMessageIRQPriority} property}{mMessageIRQPriority}
+\subsubsectionLabel{The \texttt{mLoopBackMode} property}{mLoopBackMode}
+
+This boolean property corresponds to the \texttt{LBP} bit of the FlexCAN \texttt{CTRL1} control register.
+
+
+
+
+
+\subsubsectionLabel{The \texttt{mMessageIRQPriority} property}{mMessageIRQPriority}
 
 This property sets the priority of the \emph{CAN message} interrupt. Highest priority is $0$, lowest is $255$.
+
+
+
+
 
 
 \sectionLabel{CAN controller state}{canControllerState}

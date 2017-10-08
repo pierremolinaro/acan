@@ -66,7 +66,7 @@ ACANSettings::ACANSettings (const uint32_t inWhishedBitRate,
     const uint32_t W = bestTQCount * mWhishedBitRate * mBitRatePrescaler ;
     const uint64_t diff = (kCANClockFrequency > W) ? (kCANClockFrequency - W) : (W - kCANClockFrequency) ;
     const uint64_t ppm = (uint64_t) (1000 * 1000) ;
-    mBitSettingOk = (diff * ppm) <= (((uint64_t) W) * inTolerancePPM) ;
+    mBitConfigurationClosedToWishedRate = (diff * ppm) <= (((uint64_t) W) * inTolerancePPM) ;
   }
 } ;
 
@@ -101,6 +101,51 @@ uint32_t ACANSettings::samplePointFromBitStart (void) const {
   const uint32_t samplePoint = 1 /* Sync Seg */ + mPropagationSegment + mPhaseSegment1 - mTripleSampling ;
   const uint32_t partPerCent = 100 ;
   return (samplePoint * partPerCent) / TQCount ;
+}
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+uint32_t ACANSettings::checkCANBitSettingConsistency (void) const {
+  uint32_t errorCode = 0 ; // Means ok
+//--- Check mBitRatePrescaler
+  if (mBitRatePrescaler == 0) {
+    errorCode |= kBitRatePrescalerIsZero ;
+  }else if (mBitRatePrescaler > 256) {
+    errorCode |= kBitRatePrescalerIsGreaterThan256 ;
+  }
+//--- Check mPropagationSegment
+  if (mPropagationSegment == 0) {
+    errorCode |= kPropagationSegmentIsZero ;
+  }else if (mPropagationSegment > 8) {
+    errorCode |= kPropagationSegmentIsGreaterThan8 ;
+  }
+//--- Check mPhaseSegment1
+  if (mPhaseSegment1 == 0) {
+    errorCode |= kPhaseSegment1IsZero ;
+  }else if (mPhaseSegment1 > 8) {
+    errorCode |= kPhaseSegment1IsGreaterThan8 ;
+  }
+//--- Check mPhaseSegment2
+  if (mPhaseSegment2 == 0) {
+    errorCode |= kPhaseSegment2IsZero ;
+  }else if (mPhaseSegment2 > 8) {
+    errorCode |= kPhaseSegment2IsGreaterThan8 ;
+  }
+//--- Check mRJW
+  if (mRJW == 0) {
+    errorCode |= kRJWIsZero ;
+  }else if (mRJW > 4) {
+    errorCode |= kRJWIsGreaterThan4 ;
+  }
+  if (mRJW > mPhaseSegment2) {
+    errorCode |= kRJWIsGreaterThanPhaseSegment2 ;
+  }
+
+//   if (ok) {
+//     ok = !settings.mTripleSampling || (settings.mPhaseSegment1 >= 2) ;
+//   }
+//---
+  return errorCode ;
 }
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————

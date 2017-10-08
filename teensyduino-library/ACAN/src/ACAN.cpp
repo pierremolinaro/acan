@@ -73,10 +73,10 @@ typedef volatile uint32_t vuint32_t ;
 #define FLEXCAN_MB_CS_RTR_BIT_NO      (20)
 #define FLEXCAN_MB_CS_DLC_BIT_NO      (16)
 
-#define FLEXCAN_MB_CODE_TX_BUSY     (0x01)
-#define FLEXCAN_MB_CODE_TX_FULL     (0x02)
-#define FLEXCAN_MB_CODE_TX_EMPTY    (0x04)
-#define FLEXCAN_MB_CODE_TX_OVERRUN  (0x06)
+#define FLEXCAN_MB_CODE_TX_BUSY      (0x01)
+#define FLEXCAN_MB_CODE_TX_FULL      (0x02)
+#define FLEXCAN_MB_CODE_TX_EMPTY     (0x04)
+#define FLEXCAN_MB_CODE_TX_OVERRUN   (0x06)
 #define FLEXCAN_MB_CODE_TX_INACTIVE  (0x08)
 // #define FLEXCAN_MB_CODE_TX_ABORT    (0x09)
 #define FLEXCAN_MB_CODE_TX_ONCE      (0x0C)
@@ -333,10 +333,12 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
                       const uint32_t inPrimaryFilterCount,
                       const ACANSecondaryFilter inSecondaryFilters [],
                       const uint32_t inSecondaryFilterCount) {
-  uint32_t errorCode = 0 ; // No error code
+  uint32_t errorCode = 0 ; // Means ok
 //--- No configuration if CAN bit settings are incorrect
-  if (!inSettings.mBitSettingOk) {
-    errorCode = kCANBitConfigurationErrorMask ;
+  if (!inSettings.mBitConfigurationClosedToWishedRate) {
+    errorCode = kCANBitConfigurationTooFarFromWishedBitRate ;
+  }else if (!inSettings.checkCANBitSettingConsistency ()) {
+    errorCode = kCANBitInconsistentConfiguration ;
   }else{
   //---------- Tx mailboxes
   //   inSettings.mDoubleTxMB == false --> mFirstTxMailBoxIndex = 15
@@ -411,10 +413,10 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
         CORE_PIN33_CONFIG = PORT_PCR_MUX(2) ;
         CORE_PIN34_CONFIG = PORT_PCR_MUX(2) ;
         if (inSettings.mUseAlternateTxPin) {
-          errorCode |= kNoAlternateTxPinForCan1ErrorMask ; // Error
+          errorCode |= kNoAlternateTxPinForCan1 ; // Error
         }
         if (inSettings.mUseAlternateRxPin) {
-          errorCode |= kNoAlternateRxPinForCan1ErrorMask ; // Error
+          errorCode |= kNoAlternateRxPinForCan1 ; // Error
         }
       }
     #endif
@@ -485,7 +487,7 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
     }
   //--- Setup primary filters (individual filters in FlexCAN vocabulary)
     if (inPrimaryFilterCount > MAX_PRIMARY_FILTER_COUNT) {
-      errorCode |= kTooMuchPrimaryFiltersErrorMask ; // Error, too much primary filters
+      errorCode |= kTooMuchPrimaryFilters ; // Error, too much primary filters
     }
     mActualPrimaryFilterCount = (uint8_t) primaryFilterCount ;
     mMaxPrimaryFilterCount = (uint8_t) MAX_PRIMARY_FILTER_COUNT ;
@@ -495,7 +497,7 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
       FLEXCANb_MB_MASK (mFlexcanBaseAddress, i) = mask ;
       FLEXCANb_IDAF (mFlexcanBaseAddress, i) = acceptance ;
       if ((acceptance & 1) != 0) {
-        errorCode |= kNotConformPrimaryFilterErrorMask ;
+        errorCode |= kNotConformPrimaryFilter ;
       }
     }
     for (uint32_t i = primaryFilterCount ; i<MAX_PRIMARY_FILTER_COUNT ; i++) {
@@ -505,13 +507,13 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
   //--- Setup secondary filters (filter mask for Rx individual acceptance filter)
     FLEXCANb_RXFGMASK (mFlexcanBaseAddress) = (inSecondaryFilterCount > 0) ? (~1) : defaultFilterMask ;
     if (inSecondaryFilterCount > MAX_SECONDARY_FILTER_COUNT) {
-      errorCode |= kTooMuchSecondaryFiltersErrorMask ;
+      errorCode |= kTooMuchSecondaryFilters ;
     }
     for (uint32_t i=0 ; i<secondaryFilterCount ; i++) {
       const uint32_t acceptance = inSecondaryFilters [i].mSingleAcceptanceFilter ;
       FLEXCANb_IDAF (mFlexcanBaseAddress, i + MAX_PRIMARY_FILTER_COUNT) = acceptance ;
       if ((acceptance & 1) != 0) { // Bit 0 is the error flag
-        errorCode |= kNotConformSecondaryFilterErrorMask ;
+        errorCode |= kNotConformSecondaryFilter ;
       }
     }
     for (uint32_t i=MAX_PRIMARY_FILTER_COUNT + secondaryFilterCount ; i<TOTAL_FILTER_COUNT ; i++) {
