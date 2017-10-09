@@ -337,7 +337,7 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
 //--- No configuration if CAN bit settings are incorrect
   if (!inSettings.mBitConfigurationClosedToWishedRate) {
     errorCode = kCANBitConfigurationTooFarFromWishedBitRate ;
-  }else if (!inSettings.CANBitSettingConsistency ()) {
+  }else if (inSettings.CANBitSettingConsistency () != 0) {
     errorCode = kCANBitInconsistentConfiguration ;
   }else{
   //---------- Tx mailboxes
