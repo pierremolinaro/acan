@@ -5,9 +5,11 @@ ACAN is a driver for the FlexCAN module built into the Teensy 3.1 / 3.2, 3.5, 3.
 
 The driver supports many bit rates, as standard 62.5 kbit/s, 125 kbit/s, 250 kbit/s, 500 kbit/s, and 1 Mbit/s. An efficient CAN bit timing calculator finds settings for them, but also for exotic bit rates as 842 kbit/s. If the wished bit rate cannot be achieved, the `begin` method does not configure the hardware and returns an error code.
 
-### Sample Code
+> The Teensyduino library is the `teensyduino-library/ACAN` directory. Driver API is fully described by the PDF file in the `teensyduino-library/ACAN/extras` directory.
 
-> Driver API is fully described by the PDF file in the `teensyduino-library/ACAN/extras` directory.
+### Demo Sketch
+
+> The demo sketch is in the `teensyduino-library/ACAN/examples/LoopBackDemo` directory.
 
 Configuration is a four-step operation.
 
