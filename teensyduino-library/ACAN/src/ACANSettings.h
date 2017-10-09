@@ -66,9 +66,9 @@ class ACANSettings {
   public: uint32_t samplePointFromBitStart (void) const ;
 
 //--- Check CAN bit settings consistency (returns 0 if ok)
-  public: uint32_t checkCANBitSettingConsistency (void) const ;
+  public: uint32_t CANBitSettingConsistency (void) const ;
 
-//--- Error codes of checkCANBitSettingConsistency
+//--- Error codes of CANBitSettingConsistency
   public: static const uint32_t kBitRatePrescalerIsZero           = 1 <<  0 ; // mBitRatePrescaler should be >= 1
   public: static const uint32_t kBitRatePrescalerIsGreaterThan256 = 1 <<  1 ; // mBitRatePrescaler should be <= 256
   public: static const uint32_t kPropagationSegmentIsZero         = 1 <<  2 ; // mPropagationSegment should be >= 1

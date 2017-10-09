@@ -4,6 +4,7 @@
 ## Other files
 test-ACANSettings-on-desktop/molican-settings.xcodeproj/xcuserdata/
 test-ACANSettings-on-desktop/molican-settings.xcodeproj/project.xcworkspace/
+test-ACANSettings-on-desktop/build/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

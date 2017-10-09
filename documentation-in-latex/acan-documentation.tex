@@ -299,7 +299,7 @@
 
 \title{\bf \Huge{ACAN library for Teensy 3.1 / 3.2, 3.5, 3.6\\Version 1.0.0}}
 \author{Pierre Molinaro}
-\date {October xxx, 2017}
+\date {October 9, 2017}
 
 \maketitle
 
@@ -322,13 +322,13 @@
 \begin{center}
   \begin{tabular}{lll}
     \textbf{Version} & \textbf{Date} & \textbf{Comment}\\
-    1.0.0 & October xxx, 2017 & Initial release \\
+    1.0.0 & October 9, 2017 & Initial release \\
   \end{tabular}
 \end{center}
 
 \section{Features}
 
-The \texttt{ACAN} library is a CAN ("Controller Area Network") driver for Teensy 3.x. It has been designed to make it easy to start and to be easily configurable:
+The \texttt{ACAN} library is a CAN ("Controller Area Network") driver for Teensy 3.1 / 3.2, 3.5, 3.6. It has been designed to make it easy to start and to be easily configurable:
 \begin{itemize}
   \item default configuration sends and receives any frame -- no default filter to provide;
   \item efficient built-in CAN bit settings computation from user bit rate;
@@ -1108,7 +1108,7 @@ Be aware that the \texttt{filter\_mask} and a \texttt{filter\_acceptance} must a
 
 For example, the filter mask \texttt{0x7FC} and the filter acceptance \texttt{0x541} do not conform because the bit 0 of \texttt{filter\_mask} is clear and the bit 0 of the filter acceptance is set.
 
-{\bf A non conform filter never matches.}
+{\bf A non conform filter may never match.}
 
 
 
@@ -1226,7 +1226,7 @@ Each element of the \texttt{secondaryFilters} constant array defines an acceptan
   \item the required identifier value.
 \end{itemize}
 
-{\bf Maximum number of \emph{secondary filters}.} The number of \emph{secondary filters} is limited: 12 by default, as the default value of \texttt{settings.mConfiguration} is \texttt{ACANSettings::k12\_12\_Filters}. See \refSectionPage{FlexCANconfiguration} for getting the number of \emph{primary filters} for each configuration, and for changing default value.
+{\bf Maximum number of \emph{secondary filters}.} The number of \emph{secondary filters} is limited: 12 by default, as the default value of \texttt{settings.mConfiguration} is \texttt{ACANSettings::k12\_12\_Filters}. See \refSectionPage{FlexCANconfiguration} for getting the number of \emph{secondary filters} for each configuration, and for changing default value.
 
 {\bf Test order.} The FlexCAN hardware examines the filters in the increasing order of their indexes in the \texttt{secondaryFilters} constant array. As soon as a match occurs, the message is transfered to Rx FIFO buffer and the examination process is completed. If no match occurs, the message is lost.
 
@@ -1594,7 +1594,7 @@ This error is a fatal error, the driver and the FlexCAN module are not configure
 
 \subsubsectionLabel{CAN Bit inconsistent configuration error}{CANBitInconsistentConfigError}
 
-This error is raised when you have changed the CAN bit properties (\texttt{mBitRatePrescaler}, \texttt{mPropagationSegment}, \texttt{mPhaseSegment1}, \texttt{mPhaseSegment2}, \texttt{mRJW}), and one or more resulting values are inconsistent. See \refSubsectionPage{checkCANBitSettingConsistency}.
+This error is raised when you have changed the CAN bit properties (\texttt{mBitRatePrescaler}, \texttt{mPropagationSegment}, \texttt{mPhaseSegment1}, \texttt{mPhaseSegment2}, \texttt{mRJW}), and one or more resulting values are inconsistent. See \refSubsectionPage{CANBitSettingConsistency}.
 
 %The constraints are:
 %\begin{align*}
@@ -1729,7 +1729,7 @@ void setup () {
 }
 \end{lstlisting}}
 
-The second argument does not change the CAN bit computation, it only changes the acceptance test. For example, you can specify that you want the computed actual bit to be exactly the wished bit rate:
+The second argument does not change the CAN bit computation, it only changes the acceptance test for setting the \texttt{mBitConfigurationClosedToWishedRate} property. For example, you can specify that you want the computed actual bit to be exactly the wished bit rate:
 { \small\begin{lstlisting}[language=c++]
 void setup () {
   Serial.begin (9600) ;
@@ -1750,7 +1750,7 @@ The fastest exact bit rate is 3,2 Mbit/s. It works when the FlexCAN module is co
 The slowest exact bit rate is 2.5 kbit/s. Note many CAN transceivers as the \texttt{MCP2551} provide "\emph{detection of ground fault (permanent Dominant) on TXD input}". For example, the \texttt{MCP2551} constraints the bit rate to be greater or equal to 16 kbit/s. If you want to work with slower bit rates and you need a transceiver, use one without this detection, as the \texttt{PCA82C250}.
 
 
-In any way, the bit rate computation always gives an actual bit rate closest from the wished bit rate. For example:
+In any way, the bit rate computation always gives a consistent result, resulting an actual bit rate closest from the wished bit rate. For example:
 { \small\begin{lstlisting}[language=c++]
 void setup () {
   Serial.begin (9600) ;
@@ -1792,7 +1792,7 @@ void setup () {
   Serial.print ("Sample Point: ") ;
   Serial.println (settings.samplePointFromBitStart ()) ; // 68, meaning 68%
   Serial.print ("Consistency: ") ;
-  Serial.println (settings.checkCANBitSettingConsistency ()) ; // 0, meaning Ok
+  Serial.println (settings.CANBitSettingConsistency ()) ; // 0, meaning Ok
   ...
 }
 \end{lstlisting}}
@@ -1800,7 +1800,7 @@ void setup () {
 The \texttt{samplePointFromBitStart} method returns sample point, expressed in per-cent of the bit duration from the beginning of the bit.
 
 
-Note the computation may calculate a bit decomposition too far from the wished bit rate, but it is always consistent. You can check this by calling the \texttt{checkCANBitSettingConsistency} method.
+Note the computation may calculate a bit decomposition too far from the wished bit rate, but it is always consistent. You can check this by calling the \texttt{CANBitSettingConsistency} method.
 
 You can change the property values for adapting to the particularities of your CAN network propagation time. By example, you can increment the \texttt{mPhaseSegment1} value, and decrement the \texttt{mPhaseSegment2} value in order to sample the \texttt{CAN Rx} pin later.
 
@@ -1817,7 +1817,7 @@ void setup () {
   Serial.print ("actual bit rate: ") ;
   Serial.println (settings.actualBitRate ()) ; //  500000: ok, bit rate did not change
   Serial.print ("Consistency: ") ;
-  Serial.println (settings.checkCANBitSettingConsistency ()) ; // 0, meaning Ok
+  Serial.println (settings.CANBitSettingConsistency ()) ; // 0, meaning Ok
   ...
 }
 \end{lstlisting}}
@@ -1861,7 +1861,7 @@ And sampling point (in per-cent unit) are given by:
 
 
 
-\subsectionLabel{The \texttt{checkCANBitSettingConsistency} method}{checkCANBitSettingConsistency}
+\subsectionLabel{The \texttt{CANBitSettingConsistency} method}{CANBitSettingConsistency}
 
 This method checks the CAN bit decomposition (given by \texttt{mBitRatePrescaler}, \texttt{mPropagationSegment}, \texttt{mPhaseSegment1}, \texttt{mPhaseSegment2}, \texttt{mRJW} property values) is consistent.
 
@@ -1873,12 +1873,12 @@ void setup () {
   Serial.println (settings.mBitConfigurationClosedToWishedRate) ; // 1 (--> is true)
   settings.mPhaseSegment1 = 0 ; // Error, mPhaseSegment1 should be >= 1 (and <= 8)
   Serial.print ("Consistency: 0x") ;
-  Serial.println (settings.checkCANBitSettingConsistency (), HEX) ; // 0x10, meaning error
+  Serial.println (settings.CANBitSettingConsistency (), HEX) ; // 0x10, meaning error
   ...
 }
 \end{lstlisting}}
 
-The \texttt{checkCANBitSettingConsistency} method returns $0$ if CAN bit decomposition is consistent. Otherwise, the returned value is a bit field that can report several errors -- see \refTableau{checkCANBitSettingConsistencyErrorCode}.
+The \texttt{CANBitSettingConsistency} method returns $0$ if CAN bit decomposition is consistent. Otherwise, the returned value is a bit field that can report several errors -- see \refTableau{CANBitSettingConsistencyErrorCode}.
 
 \begin{table}[htbp]
   \newcommand\zero{\texttt{0}}
@@ -1902,8 +1902,8 @@ The \texttt{checkCANBitSettingConsistency} method returns $0$ if CAN bit decompo
     \zero~...  \zero &\X &\texttt{1}&\X &\X &\X &\X &\X &\X &\X &\X &\X & \texttt{mRJW} > 4\\
     \zero~...  \zero &\texttt{1}&\X &\X &\X &\X &\X &\X &\X &\X &\X &\X & \texttt{mRJW} > \texttt{mPhaseSegment2}\\
   \end{tabular}
-  \caption{The \texttt{ACANSettings::checkCANBitSettingConsistency} method error codes}
-  \labelTableau{checkCANBitSettingConsistencyErrorCode}
+  \caption{The \texttt{ACANSettings::CANBitSettingConsistency} method error codes}
+  \labelTableau{CANBitSettingConsistencyErrorCode}
 \end{table}
 
 The \texttt{ACANSettings} class defines static constant properties that can be used as mask error:
@@ -1946,7 +1946,7 @@ void setup () {
 }
 \end{lstlisting}}
 
-{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{checkCANBitSettingConsistency}), the returned value is irrelevant.
+{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{CANBitSettingConsistency}), the returned value is irrelevant.
 
 
 
@@ -1979,7 +1979,7 @@ void setup () {
 }
 \end{lstlisting}}
 
-{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{checkCANBitSettingConsistency}), the returned value is irrelevant.
+{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{CANBitSettingConsistency}), the returned value is irrelevant.
 
 
 
@@ -2005,7 +2005,7 @@ void setup () {
 }
 \end{lstlisting}}
 
-{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{checkCANBitSettingConsistency}), the returned value is irrelevant.
+{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{CANBitSettingConsistency}), the returned value is irrelevant.
 
 
 
@@ -2029,7 +2029,7 @@ void setup () {
 }
 \end{lstlisting}}
 
-{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{checkCANBitSettingConsistency}), the returned value is irrelevant.
+{\bf Note. } If CAN bit settings are not consistent (see \refSubsectionPage{CANBitSettingConsistency}), the returned value is irrelevant.
 
 
 

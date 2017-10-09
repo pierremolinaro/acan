@@ -7,7 +7,7 @@ The driver supports many bit rates, as standard 62.5 kbit/s, 125 kbit/s, 250 kbi
 
 ### Sample Code
 
-> Driver API is fully described by the PDF file in the `extras` directory.
+> Driver API is fully described by the PDF file in the `teensyduino-library/ACAN/extras` directory.
 
 Configuration is a four-step operation.
 
@@ -89,7 +89,7 @@ This an setup example:
                                                secondaryFilters,
                                                2) ; // Secondary filter array size
 ```
-For example, the first filter catches exended data frames, with an identifier equal to `0x123456`. When a such frame is received, the `handle_myMessage_0` function is called. In order to achieve this by-filter dispatching, you should call `ACAN::can0.dispatchReceivedMessage` instead of `ACAN::can0.receive`:
+For example, the first filter catches extended data frames, with an identifier equal to `0x123456`. When a such frame is received, the `handle_myMessage_0` function is called. In order to achieve this by-filter dispatching, you should call `ACAN::can0.dispatchReceivedMessage` instead of `ACAN::can0.receive` in the `loop`function:
 
 
 ```cpp

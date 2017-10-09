@@ -22,6 +22,7 @@ template <typename T> class Set {
   public : inline size_t count (void) const { return mCount ; }
   public : inline bool empty (void) const { return mCount == 0 ; }
   public : inline size_t capacity (void) const { return mCapacity ; }
+  public : T valueAtIndex (const size_t inIndex) const ;
 
 //--- Set operations
   public : inline void clear (void) { mCount = 0 ; }
@@ -115,6 +116,12 @@ template <typename T> bool Set<T>::operator == (const Set<T> & inOperand) const 
     equal = mArray [i] == inOperand.mArray [i] ;
   }
   return equal ;
+}
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+template <typename T> T Set<T>::valueAtIndex (const size_t inIndex) const {
+  return mArray [inIndex] ;
 }
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————

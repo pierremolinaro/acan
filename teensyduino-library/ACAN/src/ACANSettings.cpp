@@ -105,7 +105,7 @@ uint32_t ACANSettings::samplePointFromBitStart (void) const {
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-uint32_t ACANSettings::checkCANBitSettingConsistency (void) const {
+uint32_t ACANSettings::CANBitSettingConsistency (void) const {
   uint32_t errorCode = 0 ; // Means ok
 //--- Check mBitRatePrescaler
   if (mBitRatePrescaler == 0) {
@@ -140,10 +140,6 @@ uint32_t ACANSettings::checkCANBitSettingConsistency (void) const {
   if (mRJW > mPhaseSegment2) {
     errorCode |= kRJWIsGreaterThanPhaseSegment2 ;
   }
-
-//   if (ok) {
-//     ok = !settings.mTripleSampling || (settings.mPhaseSegment1 >= 2) ;
-//   }
 //---
   return errorCode ;
 }

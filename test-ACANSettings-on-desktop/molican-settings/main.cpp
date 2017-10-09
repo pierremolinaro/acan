@@ -40,7 +40,7 @@ static void exploreAllSettings (void) {
   const uint32_t end = 20 * 1000 * 1000 ; // 20 Mbit/s
   for (uint32_t br = start ; br <= end ; br ++) {
     ACANSettings settings (br) ;
-    const uint32_t errorCode = settings.checkCANBitSettingConsistency () ;
+    const uint32_t errorCode = settings.CANBitSettingConsistency () ;
     if (errorCode != 0) {
       cout << "Error 0x" << hex << errorCode << " for br : " << dec << br << endl ;
       exit (1) ;
@@ -123,6 +123,10 @@ int main (int /* argc */, const char * /* argv */ []) {
   if (exactSettingSet != exhaustiveExactSettingSet) {
     cout << "  EQUALITY ERROR" << endl ;
     exit (1) ;
+  }else{
+    for (size_t i=0 ; i<exactSettingSet.count () ; i++) {
+      cout << "  " << exactSettingSet.valueAtIndex (i) << " bit/s" << endl ;
+    }
   }
   return 0;
 }
