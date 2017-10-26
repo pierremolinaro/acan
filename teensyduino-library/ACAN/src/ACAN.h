@@ -1,6 +1,13 @@
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-// ACAN: CAN Library for Teensy 3.1 / 3.2, 3.5, 3.6
+// A simple Arduino Teensy 3.1/3.2/3.5/3.6 CAN driver
+// by Pierre Molinaro & Jean-Luc Béchennec
 // https://github.com/pierremolinaro/acan
+//
+// This driver is written from FlexCan Library by teachop
+// dual CAN support for MK66FX1M0 and updates for MK64FX512 by Pawelsky
+// Interrupt driven Rx/Tx with buffers, object oriented callbacks by Collin Kidder
+// RTR related code by H4nky84
+//
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 #ifndef __ACAN_H__
@@ -71,22 +78,20 @@ class ACAN {
 
 //--- begin; returns a result code :
 //  0 : Ok
-//  other: every bit denotes an error (see below)
+//  other: every bit denotes an error
+  public: static const uint32_t kCANBitConfigurationErrorMask       = (1 << 0) ;
+  public: static const uint32_t kTooMuchPrimaryFiltersErrorMask     = (1 << 1) ;
+  public: static const uint32_t kNotConformPrimaryFilterErrorMask   = (1 << 2) ;
+  public: static const uint32_t kTooMuchSecondaryFiltersErrorMask   = (1 << 3) ;
+  public: static const uint32_t kNotConformSecondaryFilterErrorMask = (1 << 4) ;
+  public: static const uint32_t kNoAlternateTxPinForCan1ErrorMask   = (1 << 5) ;
+  public: static const uint32_t kNoAlternateRxPinForCan1ErrorMask   = (1 << 6) ;
+
   public: uint32_t begin (const ACANSettings & inSettings,
                           const ACANPrimaryFilter inPrimaryFilters [] = NULL ,
                           const uint32_t inPrimaryFilterCount = 0,
                           const ACANSecondaryFilter inSecondaryFilters [] = NULL,
                           const uint32_t inSecondaryFilterCount = 0) ;
-
-//--- begin method error code masks
-  public: static const uint32_t kCANBitConfigurationTooFarFromWishedBitRate = 1 << 0 ;
-  public: static const uint32_t kCANBitInconsistentConfiguration            = 1 << 1 ;
-  public: static const uint32_t kTooMuchPrimaryFilters                      = 1 << 2 ;
-  public: static const uint32_t kNotConformPrimaryFilter                    = 1 << 3 ;
-  public: static const uint32_t kTooMuchSecondaryFilters                    = 1 << 4 ;
-  public: static const uint32_t kNotConformSecondaryFilter                  = 1 << 5 ;
-  public: static const uint32_t kNoAlternateTxPinForCan1                    = 1 << 6 ;
-  public: static const uint32_t kNoAlternateRxPinForCan1                    = 1 << 7 ;
 
 //--- end: stop CAN controller
   public: void end (void) ;
@@ -138,7 +143,6 @@ class ACAN {
   private: volatile uint32_t mReceiveBufferCount = 0 ; // Used in isr and user mode --> volatile
   private: volatile uint32_t mReceiveBufferPeakCount = 0 ; // == mReceiveBufferSize if overflow did occur
   private : uint8_t mFlexcanRxFIFOFlags = 0 ;
-  private: void readRxRegisters (CANMessage & outMessage, const uint32_t inMBIndex) ;
 
 //--- Driver transmit buffer
   private: CANMessage * volatile mTransmitBuffer = NULL ;
