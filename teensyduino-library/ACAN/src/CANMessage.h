@@ -1,7 +1,8 @@
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-// ACAN: CAN Library for Teensy 3.1 / 3.2, 3.5, 3.6
-// https://github.com/pierremolinaro/acan
 // Generic CAN Message
+// by Pierre Molinaro & Jean-Luc Béchennec
+// https://github.com/pierremolinaro/acan
+//
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 #ifndef __CAN_MESSAGE_H__
@@ -17,8 +18,8 @@ class CANMessage {
   public : uint32_t id = 0 ;  // Frame identifier
   public : bool ext = false ; // false -> standard frame, true -> extended
   public : bool rtr = false ; // false -> data frame, true -> remote frame
-  public : uint8_t idx = 0 ;
-  public : uint8_t len = 0 ; // Length of data
+  public : uint8_t idx = 0 ;  // This field is used by the ACAN driver
+  public : uint8_t len = 0 ;  // Length of data
   public : union {
     #ifdef __UINT64_TYPE__
       uint64_t data64   ; // Caution: subject to endianness
