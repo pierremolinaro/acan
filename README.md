@@ -2,7 +2,7 @@
 
 ### Why I have written the ACAN library
 
-I started writing the ACAN library when I discovered the FlexCan library embedded in Teensyduino 1.40 cannot send properly remote frames, and does not receive any remote frame.
+I started writing the ACAN library when I discovered the FlexCan library embedded in Teensyduino 1.40 cannot send remote frames, and does not receive any remote frame.
 
 Furthermore, in one of my projects, I discovered that the FlexCan driver receive buffer was overflowing, and the library provides no way to be warned. The solution was to increase its size for this project, but the FlexCan driver receive buffer size is defined by a macro in the library header: when I change it, the new value is applied for all my other sketches.
 
@@ -15,12 +15,12 @@ By performing a FlexCan library source code review, I found:
 
 Two sketches are provided for demonstrating remote frame sending and receiving capabilities:
 
-* **SendReceiveRemoteFramesWithFlexCan** sketch (in `flexcan-driver-example`) which uses the ACAN library, remote frames are sent and received;
-* **SendReceiveRemoteFrames** sketch (in `teensyduino-library/ACAN/examples`) which uses the FlexCan library, the first remote frame is sent, no remote frame is received.
+* **SendReceiveRemoteFrames** sketch (in `teensyduino-library/ACAN/examples`) which uses the ACAN library, remote frames are sent and received;
+* **SendReceiveRemoteFramesWithFlexCan** sketch (in `flexcan-driver-example`) which uses the FlexCan library, the first remote frame is sent, no remote frame is received.
 
 Theses two sketches need to establish a CAN network that connects CAN0 and CAN1. You can use a single AND gate, as 74HC08, powered on 3.3V:
 
-* AND inputs are CANT0X and CAN1TX;
+* AND inputs are CAN0TX and CAN1TX;
 * AND outputs are CAN0RX and CAN1RX.
 
 ### Memory Footprint
