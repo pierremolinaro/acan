@@ -1,9 +1,14 @@
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-// This sketch demonstrates how send and receive remote frames:
+// This sketch demonstrates how send and receive remote frames using the ACAN library:
 //   - Can0 sends remote frames (Can 0 uses alternate Rx and Tx pins)
 //   - Can1 receives remote frames
 // Serial is used for displaying sent and received frame count.
+// This sketch needs to establish a CAN network that connects CAN0 and CAN1.
+// You can use a single AND gate, as 74HC08, powered on 3.3V:
+//   - AND inputs are CANT0X and CAN1TX;
+//   - AND outputs are CAN0RX and CAN1RX.
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
 #include <ACAN.h>
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————

@@ -4,7 +4,7 @@
 
 I started writing the ACAN library when I discovered the FlexCan library embedded in Teensyduino 1.40 cannot send properly remote frames, and does not receive any remote frame.
 
-Furthermore, in one of my projects, I discovered that the FlexCan driver receive buffer was overflowing, and I had no way to be warned. The solution was to increase its size for this project, but the FlexCan driver receive buffer size is defined by a macro in the library header: when I change it, the new value is applied for all my other sketches.
+Furthermore, in one of my projects, I discovered that the FlexCan driver receive buffer was overflowing, and the library provides no way to be warned. The solution was to increase its size for this project, but the FlexCan driver receive buffer size is defined by a macro in the library header: when I change it, the new value is applied for all my other sketches.
 
 By performing a FlexCan library source code review, I found:
 
@@ -13,10 +13,15 @@ By performing a FlexCan library source code review, I found:
 3. The *rtr* field of *CAN\_filter\_t* type is useless, it is never used by the driver;
 4. The *timeout* field of *CAN\_message\_t* type is useless, it is never used by the driver.
 
-Two sketchs are provided for demonstrating remote frame sending and receiving capabilities:
+Two sketches are provided for demonstrating remote frame sending and receiving capabilities:
 
-* **SendReceiveRemoteFramesWithFlexCan** sketch which uses the ACAN library, remote frames are sent and received;
-* **SendReceiveRemoteFramesWithFlexCan** sketch  which uses the FlexCan library, the first remote frame is sent, no remote frame is received.
+* **SendReceiveRemoteFramesWithFlexCan** sketch (in `flexcan-driver-example`) which uses the ACAN library, remote frames are sent and received;
+* **SendReceiveRemoteFrames** sketch (in `teensyduino-library/ACAN/examples`) which uses the FlexCan library, the first remote frame is sent, no remote frame is received.
+
+Theses two sketches need to establish a CAN network that connects CAN0 and CAN1. You can use a single AND gate, as 74HC08, powered on 3.3V:
+
+* AND inputs are CANT0X and CAN1TX;
+* AND outputs are CAN0RX and CAN1RX.
 
 ### Memory Footprint
 
@@ -29,7 +34,7 @@ Compiled with a CPU Speed of 180 MHz and Optimization *Smallest Code with LTO*.
         <td>SendReceiveRemoteFramesWithFlexCan</td><td>9000 bytes</td><td>5032 bytes</td><td>0</td>
     </tr>
     <tr>
-        <td> SendReceiveRemoteFramesWithFlexCan </td><td>9268 bytes</td><td>2940 bytes</td><td>1536 bytes</td>
+        <td> SendReceiveRemoteFrames </td><td>9268 bytes</td><td>2940 bytes</td><td>1536 bytes</td>
     </tr>
 </table>
 

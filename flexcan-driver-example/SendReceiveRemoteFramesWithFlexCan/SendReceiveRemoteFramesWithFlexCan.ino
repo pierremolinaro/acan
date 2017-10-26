@@ -6,6 +6,10 @@
 //   - no remote frame is received;
 //   - 17 remote frames are "sent"; in fact, only the first one is actually sent. The 16 next frames are only buffered
 //     in the driver send buffer.
+// This sketch needs to establish a CAN network that connects CAN0 and CAN1.
+// You can use a single AND gate, as 74HC08, powered on 3.3V:
+//   - AND inputs are CANT0X and CAN1TX;
+//   - AND outputs are CAN0RX and CAN1RX.
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 #include <FlexCAN.h>
