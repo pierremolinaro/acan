@@ -682,7 +682,7 @@ void ACAN::writeTxRegisters (const CANMessage & inMessage, const uint32_t inMBIn
 //   MESSAGE INTERRUPT SERVICE ROUTINES
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-static void readRxRegisters (const uint32_t inFlexcanBaseAddress, CANMessage & outMessage) {
+void ACAN::readRxRegisters (const uint32_t inFlexcanBaseAddress, CANMessage & outMessage) {
 //--- Get identifier, ext, rtr and len
   const uint32_t dlc = FLEXCANb_MBn_CS (inFlexcanBaseAddress, 0) ;
   outMessage.len = FLEXCAN_get_length (dlc) ;

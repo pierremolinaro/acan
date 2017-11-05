@@ -143,6 +143,7 @@ class ACAN {
   private: volatile uint32_t mReceiveBufferCount = 0 ; // Used in isr and user mode --> volatile
   private: volatile uint32_t mReceiveBufferPeakCount = 0 ; // == mReceiveBufferSize if overflow did occur
   private : uint8_t mFlexcanRxFIFOFlags = 0 ;
+  private : void readRxRegisters (const uint32_t inFlexcanBaseAddress, CANMessage & outMessage) ;
 
 //--- Driver transmit buffer
   private: CANMessage * volatile mTransmitBuffer = NULL ;
