@@ -2,7 +2,7 @@
 
 ### Why I have written the ACAN library
 
-I started writing the ACAN library when I discovered the FlexCan library embedded in Teensyduino 1.40 cannot send remote frames, and does not receive any remote frame.
+I started writing the ACAN library when I discovered the FlexCan library embedded in Teensyduino 1.36 cannot send remote frames, and does not receive any remote frame.
 
 Furthermore, in one of my projects, I discovered that the FlexCan driver receive buffer was overflowing, and the library provides no way to be warned. The solution was to increase its size for this project, but the FlexCan driver receive buffer size is defined by a macro in the library header: when I change it, the new value is applied for all my other sketches.
 
