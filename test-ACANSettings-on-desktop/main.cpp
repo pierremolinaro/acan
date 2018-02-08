@@ -29,7 +29,7 @@ static void compute (const uint32_t inWhishedBaudRate) {
   cout << "  Actual baud rate: " << settings.actualBitRate () << " bit/s" << endl ;
   cout << "  ppm: " << settings.ppmFromWishedBitRate () << endl ;
   cout << "  Sample Point: " << settings.samplePointFromBitStart () << "%" << endl ;
-  cout << "  Bit setting ok: " << (settings.mBitConfigurationClosedToWishedRate ? "yes" : "no") << endl ;
+  cout << "  Bit setting closed to wished bit rate ok: " << ((settings.ppmFromWishedBitRate () < 1000) ? "yes" : "no") << endl ;
 }
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
@@ -55,7 +55,7 @@ static void allCorrectSettings (const uint32_t inStep, Set <uint32_t> & ioValidS
   cout << "All valid settings" << endl ;
   for (uint32_t br = 1000 ; br < 20000000 ; br += inStep) {
     ACANSettings settings (br) ;
-    if (settings.mBitConfigurationClosedToWishedRate) {
+    if (settings.mBitSettingOk) {
       ioValidSettingSet.insert (br) ;
     }
   }
@@ -70,7 +70,7 @@ static void allExactSettings (Set <uint32_t> & ioExactSettingSet) {
   cout << "All exact settings" << endl ;
   for (uint32_t br = 1000 ; br < 20000000 ; br ++) {
     ACANSettings settings (br, 0) ;
-    if (settings.mBitConfigurationClosedToWishedRate) {
+    if (settings.mBitSettingOk) {
       ioExactSettingSet.insert (br) ;
     }
   }

@@ -372,51 +372,58 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
       }
     }
   //---------- Set up the pins
+    const uint32_t TxPinConfiguration =
+      PORT_PCR_MUX(2) | // Select function #2
+      (inSettings.mTxPinIsOpenCollector ? PORT_PCR_ODE : 0) // Open collector ?
+    ;
+    const uint32_t RxPinConfiguration =
+      PORT_PCR_MUX(2) | // Select function #2
+      (inSettings.mRxPinHasInternalPullUp ? (PORT_PCR_PE | PORT_PCR_PS) : 0) // Internal pullup ?
+    ;
     #if defined(__MK20DX256__) // Teensy 3.1 / 3.2
     //  3=PTA12=CAN0_TX,  4=PTA13=CAN0_RX (default)
     // 32=PTB18=CAN0_TX, 25=PTB19=CAN0_RX (alternative)
       if (inSettings.mUseAlternateTxPin) {
-        CORE_PIN32_CONFIG = PORT_PCR_MUX(2) ;
+        CORE_PIN32_CONFIG = TxPinConfiguration ;
       }else{
-        CORE_PIN3_CONFIG = PORT_PCR_MUX(2) ;
+        CORE_PIN3_CONFIG = TxPinConfiguration ;
       }
       if (inSettings.mUseAlternateRxPin) {
-        CORE_PIN25_CONFIG = PORT_PCR_MUX(2) ;
+        CORE_PIN25_CONFIG = RxPinConfiguration ;
       }else{
-        CORE_PIN4_CONFIG = PORT_PCR_MUX(2) ;
+        CORE_PIN4_CONFIG = RxPinConfiguration ;
       }
     #elif defined(__MK64FX512__) // Teensy 3.5
     //  3=PTA12=CAN0_TX,  4=PTA13=CAN0_RX (default)
     // 29=PTB18=CAN0_TX, 30=PTB19=CAN0_RX (alternative)
       if (inSettings.mUseAlternateTxPin) {
-        CORE_PIN29_CONFIG = PORT_PCR_MUX(2) ;
+        CORE_PIN29_CONFIG = TxPinConfiguration ;
       }else{
-        CORE_PIN3_CONFIG = PORT_PCR_MUX(2) ;
+        CORE_PIN3_CONFIG = TxPinConfiguration ;
       }
       if (inSettings.mUseAlternateRxPin) {
-        CORE_PIN30_CONFIG = PORT_PCR_MUX(2) ;
+        CORE_PIN30_CONFIG = RxPinConfiguration ;
       }else{
-        CORE_PIN4_CONFIG = PORT_PCR_MUX(2) ;
+        CORE_PIN4_CONFIG = RxPinConfiguration ;
       }
     #elif defined(__MK66FX1M0__) // Teensy 3.6
       if (mFlexcanBaseAddress == FLEXCAN0_BASE) { // aCan0
       //  3=PTA12=CAN0_TX,  4=PTA13=CAN0_RX (default)
       // 29=PTB18=CAN0_TX, 30=PTB19=CAN0_RX (alternative)
         if (inSettings.mUseAlternateTxPin) {
-          CORE_PIN29_CONFIG = PORT_PCR_MUX(2) ;
+          CORE_PIN29_CONFIG = TxPinConfiguration ;
         }else{
-          CORE_PIN3_CONFIG = PORT_PCR_MUX(2) ;
+          CORE_PIN3_CONFIG = TxPinConfiguration ;
         }
         if (inSettings.mUseAlternateRxPin) {
-          CORE_PIN30_CONFIG = PORT_PCR_MUX(2) ;
+          CORE_PIN30_CONFIG = RxPinConfiguration ;
         }else{
-          CORE_PIN4_CONFIG = PORT_PCR_MUX(2) ;
+          CORE_PIN4_CONFIG = RxPinConfiguration ;
         }
       }else{ // Can1
       // 33=PTE24=CAN1_TX, 34=PTE25=CAN1_RX (default)
-      // NOTE: Alternative CAN1 pins are not broken out on Teensy 3.6
-        CORE_PIN33_CONFIG = PORT_PCR_MUX(2) ;
-        CORE_PIN34_CONFIG = PORT_PCR_MUX(2) ;
+        CORE_PIN33_CONFIG = TxPinConfiguration ;
+        CORE_PIN34_CONFIG = RxPinConfiguration ;
         if (inSettings.mUseAlternateTxPin) {
           errorCode |= kNoAlternateTxPinForCan1ErrorMask ; // Error
         }

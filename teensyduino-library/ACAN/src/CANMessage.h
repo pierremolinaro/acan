@@ -5,8 +5,7 @@
 //
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-#ifndef __CAN_MESSAGE_H__
-#define __CAN_MESSAGE_H__
+#pragma once
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -16,10 +15,10 @@
 
 class CANMessage {
   public : uint32_t id = 0 ;  // Frame identifier
-  public : bool ext = false ; // false -> standard frame, true -> extended
+  public : bool ext = false ; // false -> standard frame, true -> extended frame
   public : bool rtr = false ; // false -> data frame, true -> remote frame
   public : uint8_t idx = 0 ;  // This field is used by the ACAN driver
-  public : uint8_t len = 0 ;  // Length of data
+  public : uint8_t len = 0 ;  // Length of data (0 ... 8)
   public : union {
     #ifdef __UINT64_TYPE__
       uint64_t data64   ; // Caution: subject to endianness
@@ -31,5 +30,3 @@ class CANMessage {
 } ;
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-
-#endif // __CAN_MESSAGE_H__

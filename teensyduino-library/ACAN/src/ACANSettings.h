@@ -10,8 +10,7 @@
 //
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-#ifndef __ACAN_SETTINGS_H__
-#define __ACAN_SETTINGS_H__
+#pragma once
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -47,9 +46,14 @@ class ACANSettings {
   public : typedef enum {k8_0_Filters, k10_6_Filters, k12_12_Filters, k14_18_Filters} tConfiguration ;
   public : tConfiguration mConfiguration = k12_12_Filters ;
 
-//--- Alternate pins
+//--- Tx pin configuration
   public : bool mUseAlternateTxPin = false ;
+  public : bool mTxPinIsOpenCollector = false ; // false --> totem pole, true --> open collector
+
+//--- Rx pin configuration
   public : bool mUseAlternateRxPin = false ;
+  public : bool mRxPinHasInternalPullUp = false ; // false --> no pullup, true --> pullup enabled
+
 
 //--- IRQ priority of message interrupt
   public : uint8_t mMessageIRQPriority = 64 ; // 0 --> highest, 255 --> lowest
@@ -71,8 +75,25 @@ class ACANSettings {
 
 //--- Distance of sample point from bit start (in ppc, part-per-cent, denoted by %)
   public : uint32_t samplePointFromBitStart (void) const ;
+
+//--- Bit settings are consistent
+  public : uint32_t CANBitSettingConsistency (void) const ;
+
+//--- Constant returned by CANBitSettingConsistency
+  public: static const uint32_t kBitRatePrescalerIsZero           = 1 <<  0 ;
+  public: static const uint32_t kBitRatePrescalerIsGreaterThan256 = 1 <<  1 ;
+  public: static const uint32_t kPropagationSegmentIsZero         = 1 <<  2 ;
+  public: static const uint32_t kPropagationSegmentIsGreaterThan8 = 1 <<  3 ;
+  public: static const uint32_t kPhaseSegment1IsZero              = 1 <<  4 ;
+  public: static const uint32_t kPhaseSegment1IsGreaterThan8      = 1 <<  5 ;
+  public: static const uint32_t kPhaseSegment2IsZero              = 1 <<  6 ;
+  public: static const uint32_t kPhaseSegment2IsGreaterThan8      = 1 <<  7 ;
+  public: static const uint32_t kRJWIsZero                        = 1 <<  8 ;
+  public: static const uint32_t kRJWIsGreaterThan4                = 1 <<  9 ;
+  public: static const uint32_t kRJWIsGreaterThanPhaseSegment2    = 1 << 10 ;
 } ;
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-#endif
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————

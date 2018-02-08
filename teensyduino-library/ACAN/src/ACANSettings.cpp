@@ -111,3 +111,39 @@ uint32_t ACANSettings::samplePointFromBitStart (void) const {
 }
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+
+uint32_t ACANSettings::CANBitSettingConsistency (void) const {
+  uint32_t errorCode = 0 ; // Means no error
+  if (mBitRatePrescaler == 0) {
+    errorCode |= kBitRatePrescalerIsZero ;
+  }else if (mBitRatePrescaler > 256) {
+    errorCode |= kBitRatePrescalerIsGreaterThan256 ;
+  }
+  if (mPropagationSegment == 0) {
+    errorCode |= kBitRatePrescalerIsGreaterThan256 ;
+  }else if (mPropagationSegment > 8) {
+    errorCode |= kPropagationSegmentIsGreaterThan8 ;
+  }
+  if (mPhaseSegment1 == 0) {
+    errorCode |= kPhaseSegment1IsZero ;
+  }else if (mPhaseSegment1 > 8) {
+    errorCode |= kPhaseSegment1IsGreaterThan8 ;
+  }
+  if (mPhaseSegment2 == 0) {
+    errorCode |= kPhaseSegment2IsZero ;
+  }else if (mPhaseSegment2 > 8) {
+    errorCode |= kPhaseSegment2IsGreaterThan8 ;
+  }
+  if (mRJW == 0) {
+    errorCode |= kRJWIsZero ;
+  }else if (mRJW > 4) {
+    errorCode |= kRJWIsGreaterThan4 ;
+  }
+  if (mRJW > mPhaseSegment2) {
+    errorCode |= kRJWIsGreaterThanPhaseSegment2 ;
+  }
+
+  return errorCode ;
+}
+
+//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————

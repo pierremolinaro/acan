@@ -25,9 +25,9 @@
 % http://www.tuteurs.ens.fr/logiciels/latex/xetex.html
 \RequirePackage{etex}
 \usepackage{fontspec}
-\setmainfont{Verdana}[Ligatures=TeX]
-\setsansfont{Courier}[Ligatures=NoCommon]
-\setmonofont{Courier}[Ligatures=NoCommon]
+\setmainfont{Titillium}[Ligatures=TeX]
+\setsansfont{Courier}[Ligatures=NoCommon,Scale=0.95]
+\setmonofont{Courier}[Ligatures=NoCommon,Scale=0.95]
 %\usepackage{polyglossia}
 %\setdefaultlanguage{french}
 
@@ -285,6 +285,16 @@
 
 %-----------------------------------------------------------------------------------------------------------------------*
 %                                                                                                                       *
+%   P A Q U E T A G E    « S U B F I G »                                                                                *
+%                                                                                                                       *
+%-----------------------------------------------------------------------------------------------------------------------*
+
+% Grâce à ce paquetage, il est possible de placer plusieurs figures, tables, côte à côte.
+% Voir http://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions
+\usepackage{subfig} % Pour subfloat
+
+%-----------------------------------------------------------------------------------------------------------------------*
+%                                                                                                                       *
 %   D É B U T    D U    D O C U M E N T                                                                                 *
 %                                                                                                                       *
 %-----------------------------------------------------------------------------------------------------------------------*
@@ -297,9 +307,9 @@
 %                                                                                                                       *
 %-----------------------------------------------------------------------------------------------------------------------*
 
-\title{\bf \Huge{ACAN library for Teensy 3.1 / 3.2, 3.5, 3.6\\Version 1.0.0}}
+\title{\bf \Huge{ACAN library for Teensy 3.1 / 3.2, 3.5, 3.6\\Version 1.0.1}}
 \author{Pierre Molinaro}
-\date {October 9, 2017}
+\date {December 11, 2017}
 
 \maketitle
 
@@ -320,9 +330,10 @@
 \section{Versions}
 
 \begin{center}
-  \begin{tabular}{lll}
+  \begin{tabular}{llp{10cm}}
     \textbf{Version} & \textbf{Date} & \textbf{Comment}\\
     1.0.0 & October 9, 2017 & Initial release \\
+    1.0.1 & December 11, 2017 & Added \texttt{mTxPinIsOpenCollector} (see \refSubsubsectionPage{TxPinIsOpenCollector}) and \texttt{mRxPinHasInternalPullUp} settings (\refSubsubsectionPage{RxPinHasInternalPullUp}) \\
   \end{tabular}
 \end{center}
 
@@ -338,7 +349,9 @@ The \texttt{ACAN} library is a CAN ("Controller Area Network") driver for Teensy
   \item driver transmit buffer size is customisable;
   \item driver receive buffer size is customisable;
   \item overflow of the driver receive buffer is detectable;
-  \item \emph{loop back}, \emph{self reception}, \emph{listing only} FlexCAN controller modes are selectable.
+  \item \emph{loop back}, \emph{self reception}, \emph{listing only} FlexCAN controller modes are selectable;
+  \item \texttt{Tx} pin can be configured as open collector;
+  \item internal pullup can be enabled for \texttt{Rx} pin.
 \end{itemize}
 
 
@@ -347,7 +360,7 @@ The \texttt{ACAN} library is a CAN ("Controller Area Network") driver for Teensy
 
 The \refFigure{}{figureStructureStationCAN} illustrates message flow for sending and receiving CAN messages.
 
-\begin{figure}[htbp]
+\begin{figure}[!ht]
   \small
   \centering
   \begin{tikzpicture}[line cap=round, line join=round, >=stealth]
@@ -412,7 +425,7 @@ FlexCAN controller is hardware, a module of the micro-controller. It implements 
 
 
 
-\begin{table}[htbp]
+\begin{table}[!ht]
   \small
   \onehalfspacing
   \centering
@@ -535,10 +548,10 @@ A \emph{CAN message} is an object that contains all CAN frame user informations.
 { \small\begin{lstlisting}[language=c++]
 class CANMessage {
   public : uint32_t id = 0 ;  // Frame identifier
-  public : bool ext = false ; // false -> standard frame, true -> extended
+  public : bool ext = false ; // false -> standard frame, true -> extended frame
   public : bool rtr = false ; // false -> data frame, true -> remote frame
   public : uint8_t idx = 0 ;  // Used by the ACAN driver
-  public : uint8_t len = 0 ;  // Length of data
+  public : uint8_t len = 0 ;  // Length of data (0 ... 8)
   public : union {
     #ifdef __UINT64_TYPE__
       uint64_t data64   ; // Caution: subject to endianness
@@ -570,7 +583,7 @@ The \texttt{idx} property is not used in CAN frames, but:
 
 Driver instances are global variables. You cannot choose their names, they are defined by the library.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
   \small
   \onehalfspacing
   \centering
@@ -606,9 +619,9 @@ settings.mUseAlternateTxPin = true ;
 const uint32_t errorCode = ACAN::can0.begin (settings) ;
 \end{lstlisting}}
 
-By default, theses properties are set to \texttt{false}. The following table lists default and alternate pins. Note that \texttt{ACAN::can1} does not support alternate pins. Trying to set alternate pin for \texttt{ACAN::can1} raises error bits in the value returned by \texttt{begin} (see \refSectionPage{beginMethodReference}). 
+By default, theses properties are set to \texttt{false}. The \refTableau{alternatePins} lists default and alternate pins. Note that \texttt{ACAN::can1} does not support alternate pins. Trying to set alternate pin for \texttt{ACAN::can1} raises error bits in the value returned by \texttt{begin} (see \refSectionPage{beginMethodReference}). 
 
-\begin{table}[htbp]
+\begin{table}[!ht]
   \small
   \onehalfspacing
   \centering
@@ -914,7 +927,7 @@ void setup () {
 \end{lstlisting}}
 
 
-\begin{table}[htbp]
+\begin{table}[!ht]
   \small
   \onehalfspacing
   \centering
@@ -1529,7 +1542,7 @@ The \texttt{begin} method returns an error code. The value \texttt{0} denotes no
 
 
 
-\begin{table}[htbp]
+\begin{table}[!ht]
   \small
   \onehalfspacing
   \centering
@@ -1841,7 +1854,7 @@ Resulting actual bit rate is given by:
 \end{align*}
 }
 
-And sampling point (in per-cent unit) are given by:
+And sampling points (in per-cent unit) are given by:
 {\small
 \begin{align*}
 \text{Sampling point {\it(single sampling)}} & = 100 \cdot \frac{1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1}}{1 + \texttt{mPropagationSegment} + \texttt{mPhaseSegment1} + \texttt{mPhaseSegment2}}  \\
@@ -1880,7 +1893,7 @@ void setup () {
 
 The \texttt{CANBitSettingConsistency} method returns $0$ if CAN bit decomposition is consistent. Otherwise, the returned value is a bit field that can report several errors -- see \refTableau{CANBitSettingConsistencyErrorCode}.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
   \newcommand\zero{\texttt{0}}
   \newcommand\X{\texttt{x}}
   \small
@@ -2040,7 +2053,7 @@ void setup () {
 
 All properties of the \texttt{ACANSettings} class are declared \texttt{public} and are initialized (\refTableau{tablePropertiesACanSettings}). The default values of properties from \texttt{mWhishedBitRate} until \texttt{mTripleSampling} corresponds to a CAN bit rate of 250,000 bit/s.
 
-\begin{table}[htbp]
+\begin{table}[!ht]
   \small
   \onehalfspacing
   \centering
@@ -2063,6 +2076,8 @@ All properties of the \texttt{ACANSettings} class are declared \texttt{public} a
     \texttt{mMessageIRQPriority} & \texttt{uint8\_t} & \texttt{64} & See \refSubsubsectionPage{mMessageIRQPriority}\\
     \texttt{mReceiveBufferSize} & \texttt{uint16\_t} & \texttt{32} & See \refSubsectionPage{driverReceiveBufferSize} \\
     \texttt{mTransmitBufferSize} & \texttt{uint16\_t} & \texttt{16} & See \refSubsectionPage{driverTransmitBufferSize} \\
+    \texttt{mTxPinIsOpenCollector} & \texttt{bool} & \texttt{false} & See \refSubsubsectionPage{TxPinIsOpenCollector} \\
+    \texttt{mRxPinHasInternalPullUp} & \texttt{bool} & \texttt{false} & See \refSubsubsectionPage{RxPinHasInternalPullUp} \\
    \end{tabular}
   \caption{Properties of the \texttt{ACANSettings} class}
   \labelTableau{tablePropertiesACanSettings}
@@ -2092,6 +2107,45 @@ This boolean property corresponds to the \texttt{LBP} bit of the FlexCAN \texttt
 \subsubsectionLabel{The \texttt{mMessageIRQPriority} property}{mMessageIRQPriority}
 
 This property sets the priority of the \emph{CAN message} interrupt. Highest priority is $0$, lowest is $255$.
+
+
+
+
+
+
+
+\subsubsectionLabel{The \texttt{mTxPinIsOpenCollector} property}{TxPinIsOpenCollector}
+
+When the \texttt{mTxPinIsOpenCollector} property is set to \texttt{true}, the \texttt{RECESSIVE} output state puts the \texttt{Tx} pin \texttt{Hi-Z}, instead of driving high. The \texttt{Tx} pin is always driving low in \texttt{DOMINANT} state.
+
+\begin{table}[!ht]
+%  \small
+  \onehalfspacing
+  \centering
+  \subfloat[\texttt{mTxPinIsOpenCollector} is \texttt{false} (default)]{
+    \begin{tabular}{llllll}
+      \textbf{Output state} & \textbf{Tx Pin Output} & \\
+      \texttt{DOMINANT} & \texttt{0} & \\
+      \texttt{RECESSIVE} & \texttt{1} & \\
+    \end{tabular}
+  }
+  \quad\quad\quad\quad\quad
+  \subfloat[\texttt{mTxPinIsOpenCollector} is \texttt{true}]{
+    \begin{tabular}{llllll}
+      & \textbf{Output state} & \textbf{Tx Pin Output} \\
+      & \texttt{DOMINANT} & \texttt{0}\\
+      & \texttt{RECESSIVE} & \texttt{Hi-Z}\\
+    \end{tabular}
+  }
+  \caption{\texttt{Tx} pin output, following the \texttt{mTxPinIsOpenCollector} property setting}
+  \labelTableau{tableTxPinState}
+\end{table}
+
+
+
+\subsubsectionLabel{The \texttt{mRxPinHasInternalPullUp} property}{RxPinHasInternalPullUp}
+
+By setting this property, the \texttt{Rx} pin is configured with the internal pullup enabled. This ensures that \texttt{RECESSIVE} values are received if the pin is unconnected.
 
 
 
@@ -2130,6 +2184,278 @@ public: uint32_t transmitErrorCounter (void) const ;
 
 As the \texttt{CANx\_ESR} FlexCAN control register does not return a valid value when the CAN controller is in the \emph{bus off} state, the value $256$ is forced.
 
+
+
+
+
+
+
+%\sectionLabel{Some CAN networks}{someCANnetworks}
+%
+%
+%\subsection{A typical configuration}
+%
+%\newcommand\controleurCAN {
+%  \draw[thick, fill=white] (0.4, 2.5) -- ++ (0, -1.5) -- ++ (2.2, 0) -- ++ (0, 1.5);
+%  \draw (1, 1) node [above] {\footnotesize\tt CANTX};
+%  \draw (2, 1) node [above] {\footnotesize\tt CANRX};
+%  \draw (1.5, 2.25) node {\footnotesize\it Teensy 3.x};
+%}
+%
+%\newcommand\PMPoint[2] {
+%  \draw (#1, #2)[fill=black] circle (.05);
+%}
+%
+%\newcommand\transceiver{
+%  \draw (1, 1) [->] -- ++ (0, -1) ;
+%  \draw (2, 1) [<-] -- ++ (0, -1) ;
+%  \draw (1, -4) -- ++ (0, 1.9) ;
+%  \draw (2, -2) -- ++ (0, -1) ;
+%  \draw (1, -2.05)[thick, fill=white] circle (0.05) ;
+%  \draw[thick, fill=white] (0.4, -2) rectangle ++ (2.2, 2);
+%  \draw (1, -2) node [above] {\footnotesize\tt CAN\_L};
+%  \draw (2, -2) node [above] {\footnotesize\tt CAN\_H};
+%  \draw (1, 0) node [below] {\footnotesize\tt TxD};
+%  \draw (2, 0) node [below] {\footnotesize\tt RxD};
+%  \draw (1.5, -1) node {\footnotesize\it CAN transceiver};
+%  \PMPoint{1}{-4}
+%  \PMPoint{2}{-3}
+%}
+%
+%\newcommand\board{
+%  \draw[very thick, fill=gray!12] (0, 2.5) -- ++ (0, -5) -- ++ (3, 0) -- ++ (0, 5);
+%}
+%
+%
+%\begin{figure}[!ht]
+%  \centering
+%  \begin{tikzpicture}[line cap=round, line join=round, >=stealth]
+%%   \draw (-.5, -4.5) [decorate, decoration=bumps] rectangle ++ (13.5, 5) ;
+%   \board
+%   \controleurCAN
+%   \transceiver
+%   \begin{scope}[xshift=5cm]
+%     \board
+%     \controleurCAN
+%     \transceiver
+%   \end{scope}
+%   \begin{scope}[xshift=10cm]
+%     \board
+%     \controleurCAN
+%     \transceiver
+%   \end{scope}
+%
+%   \draw (12.5, -4) -- ++ (0, 1);
+%   \draw (0.5, -4) -- ++ (0, 1);
+%
+%   \draw (0.5, -4) -- ++ (3, 0);
+%   \draw[dotted] (3.5, -4) -- ++ (1, 0);
+%   \draw (4.5, -4) -- ++ (3, 0);
+%   \draw[dotted] (7.5, -4) -- ++ (1, 0);
+%   \draw (8.5, -4) -- ++ (4, 0);
+%
+%   \draw (0.5, -3) -- ++ (3, 0);
+%   \draw[dotted] (3.5, -3) -- ++ (1, 0);
+%   \draw (4.5, -3) -- ++ (3, 0);
+%   \draw[dotted] (7.5, -3) -- ++ (1, 0);
+%   \draw (8.5, -3) -- ++ (4, 0);
+%
+%   \draw (0.5-.125, -3.75)[fill=white] rectangle ++ (.25, .5) ;
+%   \draw (12.5-.125, -3.75)[fill=white] rectangle ++ (.25, .5) ;
+%   \draw (0.5, -3.5) node[left] {\footnotesize$120\Omega~$} ;
+%   \draw (12.5, -3.5) node[left] {\footnotesize$120\Omega~$} ;
+%%   \draw (3, -3) node[above] {\footnotesize\tt CAN\_H} ;
+%%   \draw (3, -4) node[above] {\footnotesize\tt CAN\_L} ;
+%  \end{tikzpicture}
+%  \caption{Schematic diagram of a CAN bus}
+%  \labelFigure{figureConnexionTransmetteurRecepteur}
+%\end{figure}
+
+
+%\subsection{Transceivers}
+%
+%\subsubsection{\texttt{MCP2551}}
+%
+%The \refFigure{}{connexionMCP2551} shows how to connect a Teensy 3.x to a \texttt{MCP2551} transceiver\footnote{\url{http://ww1.microchip.com/downloads/en/DeviceDoc/20001667G.pdf}}. Note Microchip does not recommend the \texttt{MCP2551} for new design, use the \texttt{MCP2561}\footnote{\url{http://ww1.microchip.com/downloads/en/DeviceDoc/20005167C.pdf}} instead (see \refSubsubsectionPage{MCP2561}).
+%
+%The \texttt{MCP2551} requires a \texttt{+5V} power supply. The \texttt{CANTX} pin of the Tennsy 3.x can be directly connected to the \texttt{TXD} pin of the \texttt{MCP2551}. As the \texttt{MCP2551} is powered by \texttt{+5V}, the \texttt{RXD} high level can be directly connected to the \texttt{CANRX} pin only for Teensy 3.x that are \texttt{+5V} tolerant, i.e. Teensy 3.1, Teensy 3.2 and Teensy 3.5. {\bf\color{red} Do not connect directly \texttt{RXD} pin to a Teensy 3.6 \texttt{CANRX} pin!} Teensy 3.6 is not \texttt{+5V} tolerant. For Teensy 3.6, you should lower the high level voltage under $3.3~V$, for example by using a resistor bridge that lowers the high level voltage to $\frac{18~k\Omega}{18~k\Omega + 12~k\Omega}\cdot 5~V = 3~V$.
+%
+%The \texttt{RS} pin is connected to ground: \emph{High-Speed mode is selected by connecting the RS pin to VSS. In this mode, the transmitter output drivers have fast output rise and fall times to support high-speed CAN bus rates}.
+%
+%The \texttt{VREF} pin is \emph{Reference Voltage Output (defined as VDD/2)}, and is left open.
+%
+%
+%\newcommand\masse[2] {
+%  \draw[thick] (#1 -0.2, #2) -- ++ (0.4, 0);
+%  \draw[thick] (#1 -0.1, #2-0.1) -- ++ (0.2, 0);
+%  \draw[thick] (#1, #2-0.2) -- ++ (0, 0);
+%}
+%
+%\newcommand\MCPvingtCinqCinquanteEtUn[2]{
+%  \draw (1, -2.5) -- ++ (0, 0.4) ;
+%  \draw (2, -2) -- ++ (0, -0.5) ;
+%  \draw (2.6, -1.4) -- ++ (1.4, 0) ;
+%  \PMPoint{4}{-1.4}
+%  \draw (0.4, -0.6) -- ++ (-0.5, 0) ;
+%  \draw (0.4, -1.4) -- ++ (-0.5, 0) -- ++ (0, -0.35) ;
+%  \masse{-0.1}{-1.75}
+%  \draw (1, -2.05)[thick, fill=white] circle (0.05) ;
+%  \draw[thick, fill=white] (0.4, -2) rectangle ++ (2.2, 2);
+%  \draw (1, -2) node [above] {\footnotesize\tt CANL};
+%  \draw (2, -2) node [above] {\footnotesize\tt CANH};
+%  \draw (1, 0) node [below] {\footnotesize\tt TXD};
+%  \draw (2, 0) node [below] {\footnotesize\tt RXD};
+%  \draw (0.4, -0.6) node [right] {\footnotesize\tt VDD};
+%  \draw (-0.1, -0.6) node [left] {\footnotesize\tt +5V};
+%  \draw (0.4, -1.4) node [right] {\footnotesize\tt VSS};
+%  \draw (2.6, -0.6) node [left] {\footnotesize\tt #1};
+%  \draw (2.6, -1.4) node [left] {\footnotesize\tt RS};
+%  \draw (1.5, -1) node {\footnotesize\it #2};
+%  \draw (1, 0) node[above left] {\footnotesize\tt 1} ;
+%  \draw (2, 0) node[above right] {\footnotesize\tt 4} ;
+%  \draw (1, -2) node[below left] {\footnotesize\tt 6} ;
+%  \draw (2, -2) node[below right] {\footnotesize\tt 7} ;
+%  \draw (2.6, -0.6) node[above right] {\footnotesize\tt 5} ;
+%  \draw (2.6, -1.4) node[above right] {\footnotesize\tt 8} ;
+%  \draw (0.4, -0.6) node[above left] {\footnotesize\tt 3} ;
+%  \draw (0.4, -1.4) node[above left] {\footnotesize\tt 2} ;
+%}
+%
+%\begin{figure}[!ht]
+%  \centering
+%  \subfloat[Teensy 3.1 / 3.2, 3.5, 3.6]{
+%    \begin{tikzpicture}[line cap=round, line join=round, >=stealth]
+%      \MCPvingtCinqCinquanteEtUn{VREF}{MCP 2551}
+%      \draw (2.6, -0.6) -- ++ (0.5, 0) ;
+%      \draw (3.1, -0.6) node [right] {\footnotesize\tt\it nc};
+%      \draw (2, 0.5) [<-] -- ++ (0, -0.5) ;
+%      \draw (2-0.2, 0.5) rectangle ++ (0.4, 1);
+%      \draw (2, 1.5) [->] -- ++ (0, 1.0);
+%      \draw (2, 2) -- ++ (2, 0);
+%      \draw[fill=white] (2.5, 2-0.2) rectangle ++ (1, 0.4);
+%      \draw (3, 2) node {\small$18~k\Omega$};
+%      \draw (2, 1) node[rotate=90] {\small$12~k\Omega$};
+%      \PMPoint{2}{2}
+%      \PMPoint{4}{2}
+%  
+%      \draw[thick, fill=white] (0.4, 4) -- ++ (0, -1.5) -- ++ (2.2, 0) -- ++ (0, 1.5);
+%      \draw (1, 2.5) node [above] {\footnotesize\tt CANTX};
+%      \draw (2, 2.5) node [above] {\footnotesize\tt CANRX};
+%      \draw (1.5, 3.75) node {\footnotesize\it Teensy 3.x};
+%      \draw (1, 2.5) [->] -- ++ (0, -2.5) ;
+%      \draw (2.6, 3.25) node [left] {\footnotesize\tt GND};
+%      \draw (2.6, 3.25) -- ++ (1.4, 0) -- ++ (0, -5);
+%      \masse{4}{-1.75}
+%    \end{tikzpicture}
+%  }
+%  \quad\quad\quad\quad
+%  \subfloat[Teensy 3.1 / 3.2, 3.5]{
+%    \begin{tikzpicture}[line cap=round, line join=round, >=stealth]
+%      \MCPvingtCinqCinquanteEtUn{VREF}{MCP 2551}
+%      \draw (3.1, -0.6) node [right] {\footnotesize\tt\it nc};
+%      \draw (2.6, -0.6) -- ++ (0.5, 0) ;
+%      \draw (2, 2.5) [<-] -- ++ (0, -2.5) ;
+%  
+%      \draw[thick, fill=white] (0.4, 4) -- ++ (0, -1.5) -- ++ (2.2, 0) -- ++ (0, 1.5);
+%      \draw (1, 2.5) node [above] {\footnotesize\tt CANTX};
+%      \draw (2, 2.5) node [above] {\footnotesize\tt CANRX};
+%      \draw (1.5, 3.85) node {\footnotesize\it Teensy 3.1 / 3.2};
+%      \draw (1.5, 3.55) node {\footnotesize\it Teensy 3.5};
+%      \draw (1, 2.5) [->] -- ++ (0, -2.5) ;
+%      \draw (2.6, 3.25) node [left] {\footnotesize\tt GND};
+%      \draw (2.6, 3.25) -- ++ (1.4, 0) -- ++ (0, -5);
+%      \masse{4}{-1.75}
+%      \draw (2.6, 3.75) node[right] {\footnotesize\color{red} Do not use a Teensy 3.6!};
+%      \node[rectangle callout, fill=white, draw, callout relative pointer={(-1.7, 0.6)}] at (4.5, 1.5) {\footnotesize\color{red} Teensy 3.6 inputs are not +5V tolerant!};
+%    \end{tikzpicture}
+%  }
+%  \caption{Connecting a \texttt{MCP2551} to a Teensy 3.x}
+%  \labelFigure{connexionMCP2551}
+%\end{figure}
+%
+%
+%
+%\subsubsectionLabel{\texttt{MCP2561}}{MCP2561}
+%
+%The pinout of the \texttt{MCP2561} is the same than the \texttt{MCP2551}: the \texttt{VREF} output has been renamed as \texttt{SPLIT} (see \refFigure{}{connexionMCP2561}). {\bf\color{red} Do not connect directly \texttt{RXD} pin to a Teensy 3.6 \texttt{CANRX} pin!}
+%
+%\begin{figure}[!ht]
+%  \centering
+%  \subfloat[Teensy 3.1 / 3.2, 3.5, 3.6]{
+%    \begin{tikzpicture}[line cap=round, line join=round, >=stealth]
+%      \MCPvingtCinqCinquanteEtUn{SPLIT}{MCP 2561}
+%      \draw (3.1, -0.6) node [right] {\footnotesize\tt\it nc};
+%      \draw (2.6, -0.6) -- ++ (0.5, 0) ;
+%      \draw (2, 0.5) [<-] -- ++ (0, -0.5) ;
+%      \draw (2-0.2, 0.5) rectangle ++ (0.4, 1);
+%      \draw (2, 1.5) [->] -- ++ (0, 1.0);
+%      \draw (2, 2) -- ++ (2, 0);
+%      \draw[fill=white] (2.5, 2-0.2) rectangle ++ (1, 0.4);
+%      \draw (3, 2) node {\small$18~k\Omega$};
+%      \draw (2, 1) node[rotate=90] {\small$12~k\Omega$};
+%      \PMPoint{2}{2}
+%      \PMPoint{4}{2}
+%  
+%      \draw[thick, fill=white] (0.4, 4) -- ++ (0, -1.5) -- ++ (2.2, 0) -- ++ (0, 1.5);
+%      \draw (1, 2.5) node [above] {\footnotesize\tt CANTX};
+%      \draw (2, 2.5) node [above] {\footnotesize\tt CANRX};
+%      \draw (1.5, 3.75) node {\footnotesize\it Teensy 3.x};
+%      \draw (1, 2.5) [->] -- ++ (0, -2.5) ;
+%      \draw (2.6, 3.25) node [left] {\footnotesize\tt GND};
+%      \draw (2.6, 3.25) -- ++ (1.4, 0) -- ++ (0, -5);
+%      \masse{4}{-1.75}
+%    \end{tikzpicture}
+%  }
+%  \quad\quad\quad\quad
+%  \subfloat[Teensy 3.1 / 3.2, 3.5]{
+%    \begin{tikzpicture}[line cap=round, line join=round, >=stealth]
+%      \MCPvingtCinqCinquanteEtUn{SPLIT}{MCP 2561}
+%      \draw (3.1, -0.6) node [right] {\footnotesize\tt\it nc};
+%      \draw (2.6, -0.6) -- ++ (0.5, 0) ;
+%      \draw (2, 2.5) [<-] -- ++ (0, -2.5) ;
+%  
+%      \draw[thick, fill=white] (0.4, 4) -- ++ (0, -1.5) -- ++ (2.2, 0) -- ++ (0, 1.5);
+%      \draw (1, 2.5) node [above] {\footnotesize\tt CANTX};
+%      \draw (2, 2.5) node [above] {\footnotesize\tt CANRX};
+%      \draw (1.5, 3.85) node {\footnotesize\it Teensy 3.1 / 3.2};
+%      \draw (1.5, 3.55) node {\footnotesize\it Teensy 3.5};
+%      \draw (1, 2.5) [->] -- ++ (0, -2.5) ;
+%      \draw (2.6, 3.25) node [left] {\footnotesize\tt GND};
+%      \draw (2.6, 3.25) -- ++ (1.4, 0) -- ++ (0, -5);
+%      \masse{4}{-1.75}
+%      \draw (2.6, 3.75) node[right] {\footnotesize\color{red} Do not use a Teensy 3.6!};
+%      \node[rectangle callout, fill=white, draw, callout relative pointer={(-1.7, 0.6)}] at (4.5, 1.5) {\footnotesize\color{red} Teensy 3.6 inputs are not +5V tolerant!};
+%    \end{tikzpicture}
+%  }
+%  \caption{Connecting a \texttt{MCP2561} to a Teensy 3.x}
+%  \labelFigure{connexionMCP2561}
+%\end{figure}
+%
+%\subsubsection{\texttt{MCP2562}}
+%
+%\begin{figure}[!ht]
+%  \centering
+%  \begin{tikzpicture}[line cap=round, line join=round, >=stealth]
+%    \MCPvingtCinqCinquanteEtUn{VIO}{MCP 2562}
+%    \draw (2, 0.5) [<-] -- ++ (0, -0.5) ;
+%    \draw (1, 0.5) [->] -- ++ (0, -0.5) ;
+%
+%    \draw[thick, fill=white] (0.4, 2) -- ++ (0, -1.5) -- ++ (2.2, 0) -- ++ (0, 1.5);
+%    \draw (1, 0.5) node [above] {\footnotesize\tt CANTX};
+%    \draw (2, 0.5) node [above] {\footnotesize\tt CANRX};
+%    \draw (1.5, 1.5) node {\footnotesize\it Teensy 3.x};
+%    \draw (2.6, 1.75) node [left] {\footnotesize\tt 3.3V};
+%    \draw (2.6, 1.25) node [left] {\footnotesize\tt GND};
+%    \draw (2.6, 1.25) -- ++ (1.4, 0) -- ++ (0, -3);
+%    \draw (2.6, 1.75) -- ++ (0.7, 0) -- ++ (0, -2.35) -- ++ (-0.7, 0);
+%    \masse{4}{-1.75}
+%  \end{tikzpicture}
+%  \caption{Connecting a \texttt{MCP2562} to a Teensy 3.x}
+%  \labelFigure{connexionMCP2562}
+%\end{figure}
+%
+%
+%\subsection{Networks with no transceiver}
 
 %-----------------------------------------------------------------------------------------------------------------------*
 %   F I N    D U    D O C U M E N T                                                                                     *
