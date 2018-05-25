@@ -105,14 +105,16 @@ int main (int /* argc */, const char * /* argv */ []) {
 //  compute (10 * 1000) ;
 //  compute (842 * 1000) ;
   compute (440 * 1000) ;
-//  compute (821 * 1000) ;
+  compute (821 * 1000) ;
+  compute (842 * 1000) ;
+  compute (727 * 1000) ;
 //  compute (2000) ;
 //  compute (20 * 1000 * 1000) ;
   compute (2509) ;
 //--- Explore all settings
   exploreAllSettings () ;
 //--- Check valid settings
-  const uint32_t step = 100 ;
+  const uint32_t step = 1 ;
   Set <uint32_t> validSettingSet ;
   allCorrectSettings (step, validSettingSet) ;
 //--- Check all exact settings

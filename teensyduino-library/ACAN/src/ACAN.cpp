@@ -340,11 +340,12 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
                       const uint32_t inPrimaryFilterCount,
                       const ACANSecondaryFilter inSecondaryFilters [],
                       const uint32_t inSecondaryFilterCount) {
-  uint32_t errorCode = 0 ; // No error code
+  uint32_t errorCode = inSettings.CANBitSettingConsistency () ; // No error code
 //--- No configuration if CAN bit settings are incorrect
   if (!inSettings.mBitSettingOk) {
-    errorCode = kCANBitConfigurationErrorMask ;
-  }else{
+    errorCode |= kCANBitConfigurationErrorMask ;
+  }
+  if (0 == errorCode) {
   //---------- Tx mailboxes
   //   inSettings.mDoubleTxMB == false --> mFirstTxMailBoxIndex = 15
   //   inSettings.mDoubleTxMB == true  --> mFirstTxMailBoxIndex = 14

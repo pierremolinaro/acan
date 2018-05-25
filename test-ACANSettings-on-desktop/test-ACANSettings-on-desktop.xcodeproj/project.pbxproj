@@ -45,11 +45,11 @@
 		CFF00387202C7778002E41EA = {
 			isa = PBXGroup;
 			children = (
-				CF2EC029202C77DA003B7A7D /* main.cpp */,
-				CF2EC02A202C77DA003B7A7D /* set.h */,
 				CF2EC02C202C77F5003B7A7D /* ACANSettings.cpp */,
 				CF2EC02D202C77F5003B7A7D /* ACANSettings.h */,
+				CF2EC029202C77DA003B7A7D /* main.cpp */,
 				CFF00391202C7778002E41EA /* Products */,
+				CF2EC02A202C77DA003B7A7D /* set.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -216,6 +216,8 @@
 		CFF00398202C7778002E41EA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -223,6 +225,8 @@
 		CFF00399202C7778002E41EA /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_ENABLE_CPP_EXCEPTIONS = NO;
+				GCC_ENABLE_CPP_RTTI = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
