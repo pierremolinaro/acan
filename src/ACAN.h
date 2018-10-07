@@ -1,6 +1,6 @@
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 // A simple Arduino Teensy 3.1/3.2/3.5/3.6 CAN driver
-// by Pierre Molinaro & Jean-Luc Béchennec
+// by Pierre Molinaro
 // https://github.com/pierremolinaro/acan
 //
 // This driver is written from FlexCan Library by teachop
@@ -14,59 +14,55 @@
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-#include <Arduino.h>
-#include "CANMessage.h"
-#include "ACANSettings.h"
+#include <ACANSettings.h>
+#include <CANMessage.h>
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 typedef enum {kData, kRemote} tFrameKind ;
 typedef enum {kStandard, kExtended} tFrameFormat ;
 typedef enum {kActive, kPassive, kBusOff} tControllerState ;
-
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
-
-typedef void (*tCallBackRoutine) (const CANMessage & inMessage) ;
+typedef void (*ACANCallBackRoutine) (const CANMessage & inMessage) ;
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 class ACANPrimaryFilter {
-  public : uint32_t mFilterMask ;
-  public : uint32_t mAcceptanceFilter ;
-  public : tCallBackRoutine mCallBackRoutine ;
+  public: uint32_t mFilterMask ;
+  public: uint32_t mAcceptanceFilter ;
+  public: ACANCallBackRoutine mCallBackRoutine ;
 
-  public : inline ACANPrimaryFilter (const tCallBackRoutine inCallBackRoutine) :  // Accept any frame
+  public: inline ACANPrimaryFilter (const ACANCallBackRoutine inCallBackRoutine) :  // Accept any frame
   mFilterMask (0),
   mAcceptanceFilter (0),
   mCallBackRoutine (inCallBackRoutine) {
   }
 
-  public : ACANPrimaryFilter (const tFrameKind inKind,
-                              const tFrameFormat inFormat, // Accept any identifier
-                              const tCallBackRoutine inCallBackRoutine = NULL) ;
+  public: ACANPrimaryFilter (const tFrameKind inKind,
+                             const tFrameFormat inFormat, // Accept any identifier
+                             const ACANCallBackRoutine inCallBackRoutine = NULL) ;
 
-  public : ACANPrimaryFilter (const tFrameKind inKind,
-                              const tFrameFormat inFormat,
-                              const uint32_t inIdentifier,
-                              const tCallBackRoutine inCallBackRoutine = NULL) ;
+  public: ACANPrimaryFilter (const tFrameKind inKind,
+                             const tFrameFormat inFormat,
+                             const uint32_t inIdentifier,
+                            const ACANCallBackRoutine inCallBackRoutine = NULL) ;
 
-  public : ACANPrimaryFilter (const tFrameKind inKind,
-                              const tFrameFormat inFormat,
-                              const uint32_t inMask,
-                              const uint32_t inAcceptance,
-                              const tCallBackRoutine inCallBackRoutine = NULL) ;
+  public: ACANPrimaryFilter (const tFrameKind inKind,
+                             const tFrameFormat inFormat,
+                             const uint32_t inMask,
+                             const uint32_t inAcceptance,
+                             const ACANCallBackRoutine inCallBackRoutine = NULL) ;
 } ;
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 class ACANSecondaryFilter {
-  public : uint32_t mSingleAcceptanceFilter ;
-  public : tCallBackRoutine mCallBackRoutine ;
+  public: uint32_t mSingleAcceptanceFilter ;
+  public: ACANCallBackRoutine mCallBackRoutine ;
 
-  public : ACANSecondaryFilter (const tFrameKind inKind,
+  public: ACANSecondaryFilter (const tFrameKind inKind,
                                 const tFrameFormat inFormat,
                                 const uint32_t inIdentifier,
-                                const tCallBackRoutine inCallBackRoutine = NULL) ;
+                                const ACANCallBackRoutine inCallBackRoutine = NULL) ;
 } ;
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
@@ -128,7 +124,7 @@ class ACAN {
   private : uint8_t mMaxPrimaryFilterCount = 0 ;
 
 //--- Call back function array
-  private: tCallBackRoutine * mCallBackFunctionArray = NULL ;
+  private: ACANCallBackRoutine * mCallBackFunctionArray = NULL ;
   private: uint32_t mCallBackFunctionArraySize = 0 ;
 
 //--- Base address

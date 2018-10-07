@@ -1,6 +1,6 @@
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 // A simple Arduino Teensy 3.1/3.2/3.5/3.6 CAN driver
-// by Pierre Molinaro & Jean-Luc Béchennec
+// by Pierre Molinaro
 // https://github.com/pierremolinaro/acan
 //
 // This driver is written from FlexCan Library by teachop
@@ -80,17 +80,18 @@ class ACANSettings {
   public: uint32_t CANBitSettingConsistency (void) const ;
 
 //--- Constants returned by CANBitSettingConsistency
-  public: static const uint32_t kBitRatePrescalerIsZero           = 1 <<  0 ;
-  public: static const uint32_t kBitRatePrescalerIsGreaterThan256 = 1 <<  1 ;
-  public: static const uint32_t kPropagationSegmentIsZero         = 1 <<  2 ;
-  public: static const uint32_t kPropagationSegmentIsGreaterThan8 = 1 <<  3 ;
-  public: static const uint32_t kPhaseSegment1IsZero              = 1 <<  4 ;
-  public: static const uint32_t kPhaseSegment1IsGreaterThan8      = 1 <<  5 ;
-  public: static const uint32_t kPhaseSegment2IsZero              = 1 <<  6 ;
-  public: static const uint32_t kPhaseSegment2IsGreaterThan8      = 1 <<  7 ;
-  public: static const uint32_t kRJWIsZero                        = 1 <<  8 ;
-  public: static const uint32_t kRJWIsGreaterThan4                = 1 <<  9 ;
-  public: static const uint32_t kRJWIsGreaterThanPhaseSegment2    = 1 << 10 ;
+  public: static const uint32_t kBitRatePrescalerIsZero            = 1 <<  0 ;
+  public: static const uint32_t kBitRatePrescalerIsGreaterThan256  = 1 <<  1 ;
+  public: static const uint32_t kPropagationSegmentIsZero          = 1 <<  2 ;
+  public: static const uint32_t kPropagationSegmentIsGreaterThan8  = 1 <<  3 ;
+  public: static const uint32_t kPhaseSegment1IsZero               = 1 <<  4 ;
+  public: static const uint32_t kPhaseSegment1IsGreaterThan8       = 1 <<  5 ;
+  public: static const uint32_t kPhaseSegment2IsZero               = 1 <<  6 ;
+  public: static const uint32_t kPhaseSegment2IsGreaterThan8       = 1 <<  7 ;
+  public: static const uint32_t kRJWIsZero                         = 1 <<  8 ;
+  public: static const uint32_t kRJWIsGreaterThan4                 = 1 <<  9 ;
+  public: static const uint32_t kRJWIsGreaterThanPhaseSegment2     = 1 << 10 ;
+  public: static const uint32_t kPhaseSegment1Is1AndTripleSampling = 1 << 11 ;
 } ;
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————

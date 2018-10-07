@@ -1,6 +1,6 @@
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 // A simple Arduino Teensy 3.1/3.2/3.5/3.6 CAN driver
-// by Pierre Molinaro & Jean-Luc Béchennec
+// by Pierre Molinaro
 // https://github.com/pierremolinaro/acan
 //
 // This driver is written from FlexCan Library by teachop
@@ -28,7 +28,7 @@
 //
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-#include "ACAN.h"
+#include <ACAN.h>
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 //    FlexCAN Register access
@@ -203,7 +203,7 @@ static uint32_t computeAcceptanceFilter (const tFrameKind inKind,
 
 ACANPrimaryFilter::ACANPrimaryFilter (const tFrameKind inKind,
                                       const tFrameFormat inFormat,
-                                      const tCallBackRoutine inCallBackRoutine) :
+                                      const ACANCallBackRoutine inCallBackRoutine) :
 mFilterMask (computeFilterMask (inFormat, 0)),
 mAcceptanceFilter (computeAcceptanceFilter (inKind, inFormat, defaultMask (inFormat), 0)),
 mCallBackRoutine (inCallBackRoutine) {
@@ -214,7 +214,7 @@ mCallBackRoutine (inCallBackRoutine) {
 ACANPrimaryFilter::ACANPrimaryFilter (const tFrameKind inKind,
                                       const tFrameFormat inFormat,
                                       const uint32_t inIdentifier,
-                                      const tCallBackRoutine inCallBackRoutine) :
+                                      const ACANCallBackRoutine inCallBackRoutine) :
 mFilterMask (computeFilterMask (inFormat, (inFormat == kExtended) ? 0x1FFFFFFF : 0x7FF)),
 mAcceptanceFilter (computeAcceptanceFilter (inKind, inFormat, defaultMask (inFormat), inIdentifier)),
 mCallBackRoutine (inCallBackRoutine) {
@@ -226,7 +226,7 @@ ACANPrimaryFilter::ACANPrimaryFilter (const tFrameKind inKind,
                                       const tFrameFormat inFormat,
                                       const uint32_t inMask,
                                       const uint32_t inAcceptance,
-                                      const tCallBackRoutine inCallBackRoutine) :
+                                      const ACANCallBackRoutine inCallBackRoutine) :
 mFilterMask (computeFilterMask (inFormat, inMask)),
 mAcceptanceFilter (computeAcceptanceFilter (inKind, inFormat, inMask, inAcceptance)),
 mCallBackRoutine (inCallBackRoutine) {
@@ -237,7 +237,7 @@ mCallBackRoutine (inCallBackRoutine) {
 ACANSecondaryFilter::ACANSecondaryFilter (const tFrameKind inKind,
                                           const tFrameFormat inFormat,
                                           const uint32_t inIdentifier,
-                                          const tCallBackRoutine inCallBackRoutine) :
+                                          const ACANCallBackRoutine inCallBackRoutine) :
 mSingleAcceptanceFilter (computeAcceptanceFilter (inKind, inFormat, defaultMask (inFormat), inIdentifier)),
 mCallBackRoutine (inCallBackRoutine) {
 }
@@ -364,7 +364,7 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
   //---------- Allocate call back function array
     mCallBackFunctionArraySize = primaryFilterCount + secondaryFilterCount ;
     if (mCallBackFunctionArraySize > 0) {
-      mCallBackFunctionArray = new tCallBackRoutine [mCallBackFunctionArraySize] ;
+      mCallBackFunctionArray = new ACANCallBackRoutine [mCallBackFunctionArraySize] ;
       for (uint32_t i=0 ; i<primaryFilterCount ; i++) {
         mCallBackFunctionArray [i] = inPrimaryFilters [i].mCallBackRoutine ;
       }
@@ -600,7 +600,7 @@ bool ACAN::dispatchReceivedMessage (const tFilterMatchCallBack inFilterMatchCall
       inFilterMatchCallBack (filterIndex) ;
     }
     if (filterIndex < mCallBackFunctionArraySize) {
-      tCallBackRoutine callBackFunction = mCallBackFunctionArray [filterIndex] ;
+      ACANCallBackRoutine callBackFunction = mCallBackFunctionArray [filterIndex] ;
       if (NULL != callBackFunction) {
         callBackFunction (receivedMessage) ;
       }

@@ -1,6 +1,6 @@
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 // A simple Arduino Teensy 3.1/3.2/3.5/3.6 CAN driver
-// by Pierre Molinaro & Jean-Luc Béchennec
+// by Pierre Molinaro
 // https://github.com/pierremolinaro/acan
 //
 // This driver is written from FlexCan Library by teachop
@@ -120,12 +120,14 @@ uint32_t ACANSettings::CANBitSettingConsistency (void) const {
     errorCode |= kBitRatePrescalerIsGreaterThan256 ;
   }
   if (mPropagationSegment == 0) {
-    errorCode |= kBitRatePrescalerIsGreaterThan256 ;
+    errorCode |= kPropagationSegmentIsZero ;
   }else if (mPropagationSegment > 8) {
     errorCode |= kPropagationSegmentIsGreaterThan8 ;
   }
   if (mPhaseSegment1 == 0) {
     errorCode |= kPhaseSegment1IsZero ;
+  }else if ((mPhaseSegment1 == 1) && mTripleSampling) {
+    errorCode |= kPhaseSegment1Is1AndTripleSampling ;
   }else if (mPhaseSegment1 > 8) {
     errorCode |= kPhaseSegment1IsGreaterThan8 ;
   }
