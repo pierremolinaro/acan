@@ -10,7 +10,7 @@
 //
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-#include "ACANSettings.h"
+#include <ACANSettings.h>
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 //    CAN Settings
@@ -33,7 +33,7 @@ ACANSettings::ACANSettings (const uint32_t inWhishedBitRate,
     while ((TQCount >= 5) && (BRP <= 256)) {
     //--- Compute error using BRP (caution: BRP should be > 0)
       if (BRP > 0) {
-        const uint32_t error = (kCANClockFrequency / TQCount / BRP) - inWhishedBitRate ; // error is always >= 0
+        const uint32_t error = kCANClockFrequency - inWhishedBitRate * TQCount * BRP ; // error is always >= 0
         if (error < smallestError) {
           smallestError = error ;
           bestBRP = BRP ;
@@ -42,7 +42,7 @@ ACANSettings::ACANSettings (const uint32_t inWhishedBitRate,
       }
     //--- Compute error using BRP+1 (caution: BRP+1 should be <= 256)
       if (BRP < 256) {
-        const uint32_t error = inWhishedBitRate - (kCANClockFrequency / TQCount / (BRP + 1)) ; // error is always >= 0
+        const uint32_t error = inWhishedBitRate * TQCount * (BRP + 1) - kCANClockFrequency ; // error is always >= 0
         if (error < smallestError) {
           smallestError = error ;
           bestBRP = BRP + 1 ;
