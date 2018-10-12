@@ -346,10 +346,6 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
     errorCode |= kCANBitConfigurationErrorMask ;
   }
   if (0 == errorCode) {
-  //---------- Tx mailboxes
-  //   inSettings.mDoubleTxMB == false --> mFirstTxMailBoxIndex = 15
-  //   inSettings.mDoubleTxMB == true  --> mFirstTxMailBoxIndex = 14
-//    mFirstTxMailBoxIndex = MB_COUNT - 1 - (uint8_t) inSettings.mDoubleTxMB ;
   //---------- Allocate receive buffer
     mReceiveBufferSize = inSettings.mReceiveBufferSize ;
     mReceiveBuffer = new CANMessage [inSettings.mReceiveBufferSize] ;
@@ -632,30 +628,35 @@ bool ACAN::tryToSend (const CANMessage & inMessage) {
       }
     }
   }else{ // Data
-  //--- Find an available mailbox
-    for (uint32_t index = mFirstTxMailBoxIndex ; (index < MB_COUNT) && !sent ; index++) {
-      const uint32_t code = FLEXCAN_get_code (FLEXCANb_MBn_CS (mFlexcanBaseAddress, index)) ;
-      if (code == FLEXCAN_MB_CODE_TX_INACTIVE) {
-        writeTxRegisters (inMessage, index);
-        sent = true ;
-      }
-    }
-  //--- If no mailboxes available, try to buffer it
-    if (!sent) {
-      sent = mTransmitBufferCount < mTransmitBufferSize ;
-      if (sent) {
-        mTransmitBuffer [mTransmitBufferWriteIndex] = inMessage ;
-        mTransmitBufferWriteIndex = (mTransmitBufferWriteIndex + 1) % mTransmitBufferSize ;
-      //--- Atomic mTransmitBufferCount++, returns incremented value
-        const uint32_t v = __atomic_fetch_add (& mTransmitBufferCount, 1, __ATOMIC_ACQ_REL) ;
-      //--- Update max count
-        if (mTransmitBufferPeakCount < v) {
-          mTransmitBufferPeakCount = v ;
+    noInterrupts () ;
+    //--- Find an available mailbox
+      for (uint32_t index = mFirstTxMailBoxIndex ; (index < MB_COUNT) && !sent ; index++) {
+        const uint32_t code = FLEXCAN_get_code (FLEXCANb_MBn_CS (mFlexcanBaseAddress, index)) ;
+        if (code == FLEXCAN_MB_CODE_TX_INACTIVE) {
+          writeTxRegisters (inMessage, index);
+          sent = true ;
         }
-      }else{
-        mTransmitBufferPeakCount = mTransmitBufferSize + 1 ;
       }
-    }
+    //--- If no mailboxes available, try to buffer it
+      if (!sent) {
+        sent = mTransmitBufferCount < mTransmitBufferSize ;
+        if (sent) {
+          mTransmitBuffer [mTransmitBufferWriteIndex] = inMessage ;
+          mTransmitBufferWriteIndex += 1 ;
+          if (mTransmitBufferWriteIndex == mTransmitBufferSize) {
+            mTransmitBufferWriteIndex = 0 ;
+          }
+        //--- Atomic mTransmitBufferCount++, returns incremented value
+          mTransmitBufferCount += 1 ;
+        //--- Update max count
+          if (mTransmitBufferPeakCount < mTransmitBufferCount) {
+            mTransmitBufferPeakCount = mTransmitBufferCount ;
+          }
+        }else{
+          mTransmitBufferPeakCount = mTransmitBufferSize + 1 ;
+        }
+      }
+    interrupts () ;
   }
 //---
   return sent ;
