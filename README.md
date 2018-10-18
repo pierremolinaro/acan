@@ -17,16 +17,6 @@ By performing a FlexCan library source code review, I found:
 3. The *rtr* field of *CAN\_filter\_t* type is useless, it is never used by the driver;
 4. The *timeout* field of *CAN\_message\_t* type is useless, it is never used by the driver.
 
-Two sketches for Teensy 3.6 are provided for demonstrating remote frame sending and receiving capabilities:
-
-* **SendReceiveRemoteFrames** sketch that uses the ACAN library, remote frames are sent and received;
-* **SendReceiveRemoteFramesWithFlexCan** sketch that uses the FlexCan library, the first remote frame is sent, no remote frame is received.
-
-Theses two sketches need to establish a CAN network that connects CAN0 and CAN1. You can use a single AND gate, as 74HC08, powered on 3.3V:
-
-* AND inputs are connected to CAN0TX and CAN1TX;
-* AND output is connected to CAN0RX and CAN1RX.
-
 ### ACAN library description
 ACAN is a driver for the FlexCAN module built into the Teensy 3.1 / 3.2, 3.5, 3.6 microcontroller. It supports alternates pins. The two FlexCAN modules are supported on the Teensy 3.6.
 
