@@ -19,10 +19,7 @@
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
-typedef enum {kData, kRemote} tFrameKind ;
-typedef enum {kStandard, kExtended} tFrameFormat ;
 typedef enum {kActive, kPassive, kBusOff} tControllerState ;
-typedef void (*ACANCallBackRoutine) (const CANMessage & inMessage) ;
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
@@ -44,7 +41,7 @@ class ACANPrimaryFilter {
   public: ACANPrimaryFilter (const tFrameKind inKind,
                              const tFrameFormat inFormat,
                              const uint32_t inIdentifier,
-                            const ACANCallBackRoutine inCallBackRoutine = NULL) ;
+                             const ACANCallBackRoutine inCallBackRoutine = NULL) ;
 
   public: ACANPrimaryFilter (const tFrameKind inKind,
                              const tFrameFormat inFormat,
