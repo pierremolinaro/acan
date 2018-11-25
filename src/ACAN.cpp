@@ -315,7 +315,6 @@ void ACAN::end (void) {
   delete [] mReceiveBuffer ; mReceiveBuffer = NULL ;
   mReceiveBufferSize = 0 ;
   mReceiveBufferReadIndex = 0 ;
-  mReceiveBufferWriteIndex = 0 ;
   mReceiveBufferCount = 0 ;
   mReceiveBufferPeakCount = 0 ;
   mFlexcanRxFIFOFlags = 0 ;
@@ -323,7 +322,6 @@ void ACAN::end (void) {
   delete [] mTransmitBuffer ; mTransmitBuffer = NULL ;
   mTransmitBufferSize = 0 ;
   mTransmitBufferReadIndex = 0 ;
-  mTransmitBufferWriteIndex = 0 ;
   mTransmitBufferCount = 0 ;
   mTransmitBufferPeakCount = 0 ;
 //--- Free callback function array
@@ -561,7 +559,6 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
   //---------- Enable CAN interrupts (§56.4.10)
     FLEXCANb_IMASK1 (mFlexcanBaseAddress) =
       (1 << 15) | // MB15 (data frame sending)
-//       (inSettings.mDoubleTxMB ? 0x4000 : 0x0000) |  // MB 14
       (1 << 7) | // RxFIFO Overflow
       (1 << 6) | // RxFIFO Warning: number of messages in FIFO goes from 4 to 5
       (1 << 5)   // Data available in RxFIFO
@@ -641,12 +638,11 @@ bool ACAN::tryToSend (const CANMessage & inMessage) {
       if (!sent) {
         sent = mTransmitBufferCount < mTransmitBufferSize ;
         if (sent) {
-          mTransmitBuffer [mTransmitBufferWriteIndex] = inMessage ;
-          mTransmitBufferWriteIndex += 1 ;
-          if (mTransmitBufferWriteIndex == mTransmitBufferSize) {
-            mTransmitBufferWriteIndex = 0 ;
+          uint32_t transmitBufferWriteIndex = mTransmitBufferReadIndex + mTransmitBufferCount ;
+          if (transmitBufferWriteIndex >= mTransmitBufferSize) {
+            transmitBufferWriteIndex -= mTransmitBufferSize ;
           }
-        //--- Atomic mTransmitBufferCount++, returns incremented value
+          mTransmitBuffer [transmitBufferWriteIndex] = inMessage ;
           mTransmitBufferCount += 1 ;
         //--- Update max count
           if (mTransmitBufferPeakCount < mTransmitBufferCount) {
@@ -729,8 +725,11 @@ void ACAN::message_isr (void) {
     if (mReceiveBufferCount == mReceiveBufferSize) { // Overflow! Receive buffer is full
       mReceiveBufferPeakCount = mReceiveBufferSize + 1 ; // Mark overflow
     }else{
-      mReceiveBuffer [mReceiveBufferWriteIndex] = message ;
-      mReceiveBufferWriteIndex = (mReceiveBufferWriteIndex + 1) % mReceiveBufferSize ;
+      uint32_t receiveBufferWriteIndex = mReceiveBufferReadIndex + mReceiveBufferCount ;
+      if (receiveBufferWriteIndex >= mReceiveBufferSize) {
+        receiveBufferWriteIndex -= mReceiveBufferSize ;
+      }
+      mReceiveBuffer [receiveBufferWriteIndex] = message ;
       mReceiveBufferCount += 1 ;
       if (mReceiveBufferCount > mReceiveBufferPeakCount) {
         mReceiveBufferPeakCount = mReceiveBufferCount ;
@@ -777,7 +776,7 @@ void can0_message_isr (void) {
 
 #ifdef __MK66FX1M0__
   void can1_message_isr(void) {
-    ACAN::can1.message_isr();
+    ACAN::can1.message_isr () ;
   }
 #endif
 
@@ -813,6 +812,8 @@ uint32_t ACAN::transmitErrorCounter (void) const {
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
 
 ACAN ACAN::can0 (FLEXCAN0_BASE) ;
+
+//······················································································································
 
 #ifdef __MK66FX1M0__
   ACAN ACAN::can1 (FLEXCAN1_BASE) ;

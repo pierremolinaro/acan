@@ -109,17 +109,6 @@ class ACAN {
   public: uint32_t receiveErrorCounter (void) const ;
   public: uint32_t transmitErrorCounter (void) const ;
 
-//--- No copy
-  private : ACAN (const ACAN &) ;
-  private : ACAN & operator = (const ACAN &) ;
-
-//--- First Tx Mailbox index
-//  private : uint8_t mFirstTxMailBoxIndex = 0 ;
-
-//--- Primary filters
-  private : uint8_t mActualPrimaryFilterCount = 0 ;
-  private : uint8_t mMaxPrimaryFilterCount = 0 ;
-
 //--- Call back function array
   private: ACANCallBackRoutine * mCallBackFunctionArray = NULL ;
   private: uint32_t mCallBackFunctionArraySize = 0 ;
@@ -131,19 +120,21 @@ class ACAN {
   private: CANMessage * volatile mReceiveBuffer = NULL ;
   private: uint32_t mReceiveBufferSize = 0 ;
   private: uint32_t mReceiveBufferReadIndex = 0 ; // Only used in user mode --> no volatile
-  private: uint32_t mReceiveBufferWriteIndex = 0 ; // Only used in isr --> no volatile
   private: volatile uint32_t mReceiveBufferCount = 0 ; // Used in isr and user mode --> volatile
-  private: volatile uint32_t mReceiveBufferPeakCount = 0 ; // == mReceiveBufferSize if overflow did occur
+  private: volatile uint32_t mReceiveBufferPeakCount = 0 ; // == mReceiveBufferSize + 1 if overflow did occur
   private : uint8_t mFlexcanRxFIFOFlags = 0 ;
   private : void readRxRegisters (const uint32_t inFlexcanBaseAddress, CANMessage & outMessage) ;
+
+//--- Primary filters
+  private : uint8_t mActualPrimaryFilterCount = 0 ;
+  private : uint8_t mMaxPrimaryFilterCount = 0 ;
 
 //--- Driver transmit buffer
   private: CANMessage * volatile mTransmitBuffer = NULL ;
   private: uint32_t mTransmitBufferSize = 0 ;
   private: uint32_t mTransmitBufferReadIndex = 0 ; // Only used in isr --> no volatile
-  private: uint32_t mTransmitBufferWriteIndex = 0 ; // Only used in user mode --> no volatile
   private: volatile uint32_t mTransmitBufferCount = 0 ; // Used in isr and user mode --> volatile
-  private: volatile uint32_t mTransmitBufferPeakCount = 0 ; // == mTransmitBufferSize if tentative overflow did occur
+  private: volatile uint32_t mTransmitBufferPeakCount = 0 ; // == mTransmitBufferSize + 1 if tentative overflow did occur
   private: void writeTxRegisters (const CANMessage & inMessage, const uint32_t inMBIndex) ;
 
 //--- Message interrupt service routine
@@ -158,6 +149,10 @@ class ACAN {
   #ifdef __MK66FX1M0__
     public: static ACAN can1 ;
   #endif
+
+//--- No copy
+  private : ACAN (const ACAN &) ;
+  private : ACAN & operator = (const ACAN &) ;
 } ;
 
 //——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————

@@ -1,7 +1,7 @@
 // LoopBackDemo
 
 // This demo runs on Tennsy 3.1 / 3.2, 3.5 and 3.6
-// The FlexCAN module is configured in loop back mode: it internally receives 
+// The FlexCAN module is configured in loop back mode: it internally receives
 // every CAN frame it sends.
 
 // No external hardware required.
@@ -29,9 +29,9 @@ void setup () {
 
 //-----------------------------------------------------------------
 
-static unsigned gSendDate = 0 ;
-static unsigned gSentCount = 0 ;
-static unsigned gReceivedCount = 0 ;
+static uint32_t gSendDate = 0 ;
+static uint32_t gSentCount = 0 ;
+static uint32_t gReceivedCount = 0 ;
 
 //-----------------------------------------------------------------
 
