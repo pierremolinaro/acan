@@ -71,13 +71,13 @@ class ACAN {
 //--- begin; returns a result code :
 //  0 : Ok
 //  other: every bit denotes an error
-  public: static const uint32_t kCANBitConfigurationErrorMask       = (1 << 11) ;
-  public: static const uint32_t kTooMuchPrimaryFiltersErrorMask     = (1 << 12) ;
-  public: static const uint32_t kNotConformPrimaryFilterErrorMask   = (1 << 13) ;
-  public: static const uint32_t kTooMuchSecondaryFiltersErrorMask   = (1 << 14) ;
-  public: static const uint32_t kNotConformSecondaryFilterErrorMask = (1 << 15) ;
-  public: static const uint32_t kNoAlternateTxPinForCan1ErrorMask   = (1 << 16) ;
-  public: static const uint32_t kNoAlternateRxPinForCan1ErrorMask   = (1 << 17) ;
+  public: static const uint32_t kTooMuchPrimaryFilters     = 1 << 12 ;
+  public: static const uint32_t kNotConformPrimaryFilter   = 1 << 13 ;
+  public: static const uint32_t kTooMuchSecondaryFilters   = 1 << 14 ;
+  public: static const uint32_t kNotConformSecondaryFilter = 1 << 15 ;
+  public: static const uint32_t kNoAlternateTxPinForCan1   = 1 << 16 ;
+  public: static const uint32_t kNoAlternateRxPinForCan1   = 1 << 17 ;
+  public: static const uint32_t kCANBitConfiguration       = 1 << 18 ;
 
   public: uint32_t begin (const ACANSettings & inSettings,
                           const ACANPrimaryFilter inPrimaryFilters [] = NULL ,
