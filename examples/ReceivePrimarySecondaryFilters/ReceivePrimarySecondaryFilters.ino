@@ -1,6 +1,6 @@
 // LoopBackDemo
 
-// This demo runs on Tennsy 3.1 / 3.2, 3.5 and 3.6
+// This demo runs on Teensy 3.1 / 3.2, 3.5 and 3.6
 // The FlexCAN module is configured in loop back mode: no external hardware required. 
 
 //-----------------------------------------------------------------
@@ -15,10 +15,10 @@ void setup () {
   ACANSettings settings (125 * 1000) ; // 125 kbit/s
   settings.mLoopBackMode = true ; // Loop back mode
   settings.mSelfReceptionMode = true ; // Required for loop back mode
-  const ACANPrimaryFilter primaryFilters [] {
+  const ACANPrimaryFilter primaryFilters [] = {
     ACANPrimaryFilter (kData, kStandard, 0x542, handleMessage_0)
   } ;
-  const ACANSecondaryFilter secondaryFilters [] {
+  const ACANSecondaryFilter secondaryFilters [] = {
     ACANSecondaryFilter (kRemote, kExtended, 0x12345678, handleMessage_1)
   } ;
   const uint32_t errorCode = ACAN::can0.begin (settings, primaryFilters, 1, secondaryFilters, 1) ;
@@ -87,4 +87,3 @@ void loop () {
 //--- Received message handling
   ACAN::can0.dispatchReceivedMessage () ;
 }
-

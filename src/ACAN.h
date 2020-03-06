@@ -1,27 +1,22 @@
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 // A simple Arduino Teensy 3.1/3.2/3.5/3.6 CAN driver
 // by Pierre Molinaro
 // https://github.com/pierremolinaro/acan
 //
-// This driver is written from FlexCan Library by teachop
-// dual CAN support for MK66FX1M0 and updates for MK64FX512 by Pawelsky
-// Interrupt driven Rx/Tx with buffers, object oriented callbacks by Collin Kidder
-// RTR related code by H4nky84
-//
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 #pragma once
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 #include <ACANSettings.h>
 #include <CANMessage.h>
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 typedef enum {kActive, kPassive, kBusOff} tControllerState ;
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 class ACANPrimaryFilter {
   public: uint32_t mFilterMask ;
@@ -50,7 +45,7 @@ class ACANPrimaryFilter {
                              const ACANCallBackRoutine inCallBackRoutine = NULL) ;
 } ;
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 class ACANSecondaryFilter {
   public: uint32_t mSingleAcceptanceFilter ;
@@ -62,7 +57,7 @@ class ACANSecondaryFilter {
                                 const ACANCallBackRoutine inCallBackRoutine = NULL) ;
 } ;
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 class ACAN {
 //--- Constructor
@@ -117,24 +112,24 @@ class ACAN {
   private: const uint32_t mFlexcanBaseAddress ; // Initialized in constructor
 
 //--- Driver receive buffer
-  private: CANMessage * volatile mReceiveBuffer = NULL ;
+  private: CANMessage * mReceiveBuffer = NULL ;
   private: uint32_t mReceiveBufferSize = 0 ;
-  private: uint32_t mReceiveBufferReadIndex = 0 ; // Only used in user mode --> no volatile
-  private: volatile uint32_t mReceiveBufferCount = 0 ; // Used in isr and user mode --> volatile
-  private: volatile uint32_t mReceiveBufferPeakCount = 0 ; // == mReceiveBufferSize + 1 if overflow did occur
-  private : uint8_t mFlexcanRxFIFOFlags = 0 ;
-  private : void readRxRegisters (const uint32_t inFlexcanBaseAddress, CANMessage & outMessage) ;
+  private: uint32_t mReceiveBufferReadIndex = 0 ;
+  private: uint32_t mReceiveBufferCount = 0 ;
+  private: uint32_t mReceiveBufferPeakCount = 0 ; // == mReceiveBufferSize + 1 if overflow did occur
+  private: uint8_t mFlexcanRxFIFOFlags = 0 ;
+  private: void readRxRegisters (CANMessage & outMessage) ;
 
 //--- Primary filters
   private : uint8_t mActualPrimaryFilterCount = 0 ;
   private : uint8_t mMaxPrimaryFilterCount = 0 ;
 
 //--- Driver transmit buffer
-  private: CANMessage * volatile mTransmitBuffer = NULL ;
+  private: CANMessage * mTransmitBuffer = NULL ;
   private: uint32_t mTransmitBufferSize = 0 ;
-  private: uint32_t mTransmitBufferReadIndex = 0 ; // Only used in isr --> no volatile
-  private: volatile uint32_t mTransmitBufferCount = 0 ; // Used in isr and user mode --> volatile
-  private: volatile uint32_t mTransmitBufferPeakCount = 0 ; // == mTransmitBufferSize + 1 if tentative overflow did occur
+  private: uint32_t mTransmitBufferReadIndex = 0 ;
+  private: uint32_t mTransmitBufferCount = 0 ;
+  private: uint32_t mTransmitBufferPeakCount = 0 ; // == mTransmitBufferSize + 1 if tentative overflow did occur
   private: void writeTxRegisters (const CANMessage & inMessage, const uint32_t inMBIndex) ;
 
 //--- Message interrupt service routine
@@ -151,8 +146,8 @@ class ACAN {
   #endif
 
 //--- No copy
-  private : ACAN (const ACAN &) ;
-  private : ACAN & operator = (const ACAN &) ;
+  private : ACAN (const ACAN &) = delete ;
+  private : ACAN & operator = (const ACAN &) = delete ;
 } ;
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------

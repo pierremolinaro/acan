@@ -1,14 +1,9 @@
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 // A simple Arduino Teensy 3.1/3.2/3.5/3.6 CAN driver
 // by Pierre Molinaro
 // https://github.com/pierremolinaro/acan
 //
-// This driver is written from FlexCan Library by teachop
-// dual CAN support for MK66FX1M0 and updates for MK64FX512 by Pawelsky
-// Interrupt driven Rx/Tx with buffers, object oriented callbacks by Collin Kidder
-// RTR related code by H4nky84
-//
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 // Teensy 3.1, 3.2 (__MK20DX256__)
 //   One CAN module (CAN0)
 //        3=PTA12=CAN0_TX,  4=PTA13=CAN0_RX (default)
@@ -26,26 +21,25 @@
 //        CAN1: 33=PTE24=CAN1_TX, 34=PTE25=CAN1_RX (default)
 //        CAN1: NOTE: Alternative CAN1 pins are not broken out on Teensy 3.6
 //
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 #include <ACAN.h>
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //    FlexCAN Register access
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 static const uint32_t FLEXCAN0_BASE = 0x40024000 ;
 static const uint32_t FLEXCAN1_BASE = 0x400A4000 ;
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 typedef volatile uint32_t vuint32_t ;
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 #define FLEXCANb_MCR(b)                   (*((vuint32_t *) (b)))
 #define FLEXCANb_CTRL1(b)                 (*((vuint32_t *) ((b)+0x04)))
-// #define FLEXCANb_RXMGMASK(b)              (*((vuint32_t *) ((b)+0x10)))
 #define FLEXCANb_ECR(b)                   (*((vuint32_t *) ((b)+0x1C)))
 #define FLEXCANb_ESR1(b)                  (*((vuint32_t *) ((b)+0x20)))
 #define FLEXCANb_IMASK1(b)                (*((vuint32_t *) ((b)+0x28)))
@@ -146,23 +140,23 @@ typedef volatile uint32_t vuint32_t ;
 #define FLEXCAN_MB_ID_STD_BIT_NO      (18)
 #define FLEXCAN_MB_ID_EXT_BIT_NO      (0)
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //    imin template function
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 template <typename T> static inline T imin (const T inA, const T inB) {
   return (inA <= inB) ? inA : inB ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //    CAN Filter
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 static uint32_t defaultMask (const tFrameFormat inFormat) {
   return (inFormat == kExtended) ? 0x1FFFFFFF : 0x7FF ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 static uint32_t computeFilterMask (const tFrameFormat inFormat,
                                    const uint32_t inMask) {
@@ -173,7 +167,7 @@ static uint32_t computeFilterMask (const tFrameFormat inFormat,
   ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 static uint32_t computeAcceptanceFilter (const tFrameKind inKind,
                                          const tFrameFormat inFormat,
@@ -199,7 +193,7 @@ static uint32_t computeAcceptanceFilter (const tFrameKind inKind,
   ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 ACANPrimaryFilter::ACANPrimaryFilter (const tFrameKind inKind,
                                       const tFrameFormat inFormat,
@@ -209,7 +203,7 @@ mAcceptanceFilter (computeAcceptanceFilter (inKind, inFormat, defaultMask (inFor
 mCallBackRoutine (inCallBackRoutine) {
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 ACANPrimaryFilter::ACANPrimaryFilter (const tFrameKind inKind,
                                       const tFrameFormat inFormat,
@@ -220,7 +214,7 @@ mAcceptanceFilter (computeAcceptanceFilter (inKind, inFormat, defaultMask (inFor
 mCallBackRoutine (inCallBackRoutine) {
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 ACANPrimaryFilter::ACANPrimaryFilter (const tFrameKind inKind,
                                       const tFrameFormat inFormat,
@@ -232,7 +226,7 @@ mAcceptanceFilter (computeAcceptanceFilter (inKind, inFormat, inMask, inAcceptan
 mCallBackRoutine (inCallBackRoutine) {
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 ACANSecondaryFilter::ACANSecondaryFilter (const tFrameKind inKind,
                                           const tFrameFormat inFormat,
@@ -242,13 +236,13 @@ mSingleAcceptanceFilter (computeAcceptanceFilter (inKind, inFormat, defaultMask 
 mCallBackRoutine (inCallBackRoutine) {
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //    FlexCAN Mailboxes configuration
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 static const int MB_COUNT = 16 ; // MB count is fixed by hardware
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 // FlexCAN is configured for FIFO reception (MCR.FEN bit is set)
 // The CTRL2.RFFN field defines the number of Rx FIFO filters (§56.4.12, page 1760)
 
@@ -283,17 +277,17 @@ static inline size_t totalFilterCountForConfiguration (const ACANSettings::tConf
   return 8 + 8 * (size_t) inConfiguration ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //    Constructor
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 ACAN::ACAN (const uint32_t inFlexcanBaseAddress) :
 mFlexcanBaseAddress (inFlexcanBaseAddress) {
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //    end
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 void ACAN::end (void) {
 //--- Disable interrupts
@@ -329,9 +323,9 @@ void ACAN::end (void) {
  mCallBackFunctionArraySize = 0 ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //    begin method
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 uint32_t ACAN::begin (const ACANSettings & inSettings,
                       const ACANPrimaryFilter inPrimaryFilters [],
@@ -568,21 +562,23 @@ uint32_t ACAN::begin (const ACANSettings & inSettings,
   return errorCode ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //   RECEPTION
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 bool ACAN::receive (CANMessage & outMessage) {
-  const bool hasMessage = mReceiveBufferCount > 0 ;
-  if (hasMessage) {
-    outMessage = mReceiveBuffer [mReceiveBufferReadIndex] ;
-    mReceiveBufferReadIndex = (mReceiveBufferReadIndex + 1) % mReceiveBufferSize ;
-    __atomic_fetch_sub (& mReceiveBufferCount, 1, __ATOMIC_ACQ_REL) ; // Atomic mReceiveBufferCount--
-  }
+  noInterrupts () ;
+    const bool hasMessage = mReceiveBufferCount > 0 ;
+    if (hasMessage) {
+      outMessage = mReceiveBuffer [mReceiveBufferReadIndex] ;
+      mReceiveBufferReadIndex = (mReceiveBufferReadIndex + 1) % mReceiveBufferSize ;
+      mReceiveBufferCount -= 1 ;
+    }
+  interrupts ()
   return hasMessage ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 bool ACAN::dispatchReceivedMessage (const tFilterMatchCallBack inFilterMatchCallBack) {
   CANMessage receivedMessage ;
@@ -602,17 +598,17 @@ bool ACAN::dispatchReceivedMessage (const tFilterMatchCallBack inFilterMatchCall
   return hasReceived ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //   EMISSION
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 bool ACAN::tryToSend (const CANMessage & inMessage) {
-  const uint32_t mFirstTxMailBoxIndex = 15 ;
+  const uint32_t firstTxMailBoxIndex = 15 ;
   bool sent = false ;
   if (inMessage.rtr) { // Remote
-    for (uint32_t index = mMaxPrimaryFilterCount ; (index < mFirstTxMailBoxIndex) && !sent ; index++) {
-      const uint32_t code = FLEXCAN_get_code (FLEXCANb_MBn_CS (mFlexcanBaseAddress, index)) ;
-      switch (code) {
+    for (uint32_t index = mMaxPrimaryFilterCount ; (index < firstTxMailBoxIndex) && !sent ; index++) {
+      const uint32_t status = FLEXCAN_get_code (FLEXCANb_MBn_CS (mFlexcanBaseAddress, index)) ;
+      switch (status) {
       case FLEXCAN_MB_CODE_TX_INACTIVE : // MB has never sent remote frame
       case FLEXCAN_MB_CODE_TX_EMPTY : // MB has sent a remote frame
       case FLEXCAN_MB_CODE_TX_FULL : // MB has sent a remote frame, and received a frame that did not pass any filter
@@ -627,11 +623,15 @@ bool ACAN::tryToSend (const CANMessage & inMessage) {
   }else{ // Data
     noInterrupts () ;
     //--- Find an available mailbox
-      for (uint32_t index = mFirstTxMailBoxIndex ; (index < MB_COUNT) && !sent ; index++) {
-        const uint32_t code = FLEXCAN_get_code (FLEXCANb_MBn_CS (mFlexcanBaseAddress, index)) ;
-        if (code == FLEXCAN_MB_CODE_TX_INACTIVE) {
-          writeTxRegisters (inMessage, index);
-          sent = true ;
+    // Don't compete with the transmit buffer for an inactive mailbox (race condition)
+    // Bug fixed in 2.0.1, thanks to wangnick
+      if (mTransmitBufferCount == 0) {
+        for (uint32_t index = firstTxMailBoxIndex ; (index < MB_COUNT) && !sent ; index++) {
+          const uint32_t code = FLEXCAN_get_code (FLEXCANb_MBn_CS (mFlexcanBaseAddress, index)) ;
+          if (code == FLEXCAN_MB_CODE_TX_INACTIVE) {
+            writeTxRegisters (inMessage, index);
+            sent = true ;
+          }
         }
       }
     //--- If no mailboxes available, try to buffer it
@@ -658,7 +658,7 @@ bool ACAN::tryToSend (const CANMessage & inMessage) {
   return sent ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 void ACAN::writeTxRegisters (const CANMessage & inMessage, const uint32_t inMBIndex) {
 //--- Make Tx box inactive
@@ -683,45 +683,45 @@ void ACAN::writeTxRegisters (const CANMessage & inMessage, const uint32_t inMBIn
   FLEXCANb_MBn_CS (mFlexcanBaseAddress, inMBIndex) = command ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //   MESSAGE INTERRUPT SERVICE ROUTINES
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
-void ACAN::readRxRegisters (const uint32_t inFlexcanBaseAddress, CANMessage & outMessage) {
+void ACAN::readRxRegisters (CANMessage & outMessage) {
 //--- Get identifier, ext, rtr and len
-  const uint32_t dlc = FLEXCANb_MBn_CS (inFlexcanBaseAddress, 0) ;
+  const uint32_t dlc = FLEXCANb_MBn_CS (mFlexcanBaseAddress, 0) ;
   outMessage.len = FLEXCAN_get_length (dlc) ;
   if (outMessage.len > 8) {
     outMessage.len = 8 ;
   }
   outMessage.ext = (dlc & FLEXCAN_MB_CS_IDE) != 0 ;
   outMessage.rtr = (dlc & FLEXCAN_MB_CS_RTR) != 0 ;
-  outMessage.id  = FLEXCANb_MBn_ID (inFlexcanBaseAddress, 0) & FLEXCAN_MB_ID_EXT_MASK ;
+  outMessage.id  = FLEXCANb_MBn_ID (mFlexcanBaseAddress, 0) & FLEXCAN_MB_ID_EXT_MASK ;
   if (!outMessage.ext) {
     outMessage.id >>= FLEXCAN_MB_ID_STD_BIT_NO ;
   }
 //-- Get data (registers are big endian, values should be swapped)
-  outMessage.data32 [0] = __builtin_bswap32 (FLEXCANb_MBn_WORD0 (inFlexcanBaseAddress, 0)) ;
-  outMessage.data32 [1] = __builtin_bswap32 (FLEXCANb_MBn_WORD1 (inFlexcanBaseAddress, 0)) ;
+  outMessage.data32 [0] = __builtin_bswap32 (FLEXCANb_MBn_WORD0 (mFlexcanBaseAddress, 0)) ;
+  outMessage.data32 [1] = __builtin_bswap32 (FLEXCANb_MBn_WORD1 (mFlexcanBaseAddress, 0)) ;
 //--- Zero unused data entries
   for (uint32_t i = outMessage.len ; i < 8 ; i++) {
     outMessage.data [i] = 0 ;
   }
 //--- Get filter index
-  outMessage.idx = (uint8_t) FLEXCANb_RXFIR (inFlexcanBaseAddress) ;
+  outMessage.idx = (uint8_t) FLEXCANb_RXFIR (mFlexcanBaseAddress) ;
   if (outMessage.idx >= mMaxPrimaryFilterCount) {
     outMessage.idx -= mMaxPrimaryFilterCount - mActualPrimaryFilterCount ;
   }
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 void ACAN::message_isr (void) {
   const uint32_t status = FLEXCANb_IFLAG1 (mFlexcanBaseAddress) ;
 //--- A trame has been received in RxFIFO ?
   if ((status & (1 << 5)) != 0) {
     CANMessage message ;
-    readRxRegisters (mFlexcanBaseAddress, message) ;
+    readRxRegisters (message) ;
     if (mReceiveBufferCount == mReceiveBufferSize) { // Overflow! Receive buffer is full
       mReceiveBufferPeakCount = mReceiveBufferSize + 1 ; // Mark overflow
     }else{
@@ -746,9 +746,9 @@ void ACAN::message_isr (void) {
   }
 //--- Handle Tx MBs
   if (mTransmitBufferCount > 0) { // There is a frame in the queue to send
-    const uint32_t mFirstTxMailBoxIndex = 15 ;
-    uint32_t s = (status >> mFirstTxMailBoxIndex) & 0x3 ;
-    uint32_t mb = mFirstTxMailBoxIndex ;
+    const uint32_t firstTxMailBoxIndex = 15 ;
+    uint32_t s = (status >> firstTxMailBoxIndex) & 0x3 ;
+    uint32_t mb = firstTxMailBoxIndex ;
     while (s != 0) {
       if ((s & 1) != 0) { // Has this mailbox triggered an interrupt?
         const uint32_t code = FLEXCAN_get_code (FLEXCANb_MBn_CS (mFlexcanBaseAddress, mb));
@@ -766,23 +766,23 @@ void ACAN::message_isr (void) {
   FLEXCANb_IFLAG1 (mFlexcanBaseAddress) = status ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 void can0_message_isr (void) {
   ACAN::can0.message_isr () ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 #ifdef __MK66FX1M0__
-  void can1_message_isr(void) {
+  void can1_message_isr (void) {
     ACAN::can1.message_isr () ;
   }
 #endif
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //   Controller state
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 tControllerState ACAN::controllerState (void) const {
   uint32_t state = (FLEXCANb_ESR1 (mFlexcanBaseAddress) >> 4) & 0x03 ;
@@ -793,13 +793,13 @@ tControllerState ACAN::controllerState (void) const {
   return (tControllerState) state ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 uint32_t ACAN::receiveErrorCounter (void) const {
   return FLEXCANb_ECR (mFlexcanBaseAddress) >> 8 ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 uint32_t ACAN::transmitErrorCounter (void) const {
 //--- In bus-off state, TXERRCNT field of CANx_ECR register does not reflect transmit error count: we force 256
@@ -807,9 +807,9 @@ uint32_t ACAN::transmitErrorCounter (void) const {
   return (state == kBusOff) ? 256 : (FLEXCANb_ECR (mFlexcanBaseAddress) & 0xFF) ;
 }
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 //   Drivers as global variables
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
 
 ACAN ACAN::can0 (FLEXCAN0_BASE) ;
 
@@ -819,4 +819,4 @@ ACAN ACAN::can0 (FLEXCAN0_BASE) ;
   ACAN ACAN::can1 (FLEXCAN1_BASE) ;
 #endif
 
-//——————————————————————————————————————————————————————————————————————————————————————————————————————————————————————
+//----------------------------------------------------------------------------------------------------------------------
