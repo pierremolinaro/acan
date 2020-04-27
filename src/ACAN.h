@@ -113,11 +113,11 @@ class ACAN {
 
 //--- Driver receive buffer
   private: CANMessage * mReceiveBuffer = NULL ;
-  private: uint32_t mReceiveBufferSize = 0 ;
-  private: uint32_t mReceiveBufferReadIndex = 0 ;
-  private: uint32_t mReceiveBufferCount = 0 ;
-  private: uint32_t mReceiveBufferPeakCount = 0 ; // == mReceiveBufferSize + 1 if overflow did occur
-  private: uint8_t mFlexcanRxFIFOFlags = 0 ;
+  private: volatile uint32_t mReceiveBufferSize = 0 ;
+  private: volatile uint32_t mReceiveBufferReadIndex = 0 ;
+  private: volatile uint32_t mReceiveBufferCount = 0 ;
+  private: volatile uint32_t mReceiveBufferPeakCount = 0 ; // == mReceiveBufferSize + 1 if overflow did occur
+  private: volatile uint8_t mFlexcanRxFIFOFlags = 0 ;
   private: void readRxRegisters (CANMessage & outMessage) ;
 
 //--- Primary filters
@@ -126,10 +126,10 @@ class ACAN {
 
 //--- Driver transmit buffer
   private: CANMessage * mTransmitBuffer = NULL ;
-  private: uint32_t mTransmitBufferSize = 0 ;
-  private: uint32_t mTransmitBufferReadIndex = 0 ;
-  private: uint32_t mTransmitBufferCount = 0 ;
-  private: uint32_t mTransmitBufferPeakCount = 0 ; // == mTransmitBufferSize + 1 if tentative overflow did occur
+  private: volatile uint32_t mTransmitBufferSize = 0 ;
+  private: volatile uint32_t mTransmitBufferReadIndex = 0 ;
+  private: volatile uint32_t mTransmitBufferCount = 0 ;
+  private: volatile uint32_t mTransmitBufferPeakCount = 0 ; // == mTransmitBufferSize + 1 if tentative overflow did occur
   private: void writeTxRegisters (const CANMessage & inMessage, const uint32_t inMBIndex) ;
 
 //--- Message interrupt service routine
