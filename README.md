@@ -2,7 +2,7 @@
 
 ### Compatibility with the ACAN2515 library
 
-This library is fully compatible with the MCP2515 CAN Controller ACAN2515 library [https://github.com/pierremolinaro/acan2515](), it uses a very similar API and the same `CANMessage` class for handling messages.
+This library is fully compatible with the MCP2515 CAN Controller ACAN2515 library https://github.com/pierremolinaro/acan2515, it uses a very similar API and the same `CANMessage` class for handling messages.
 
 ### Why I have written the ACAN library
 
