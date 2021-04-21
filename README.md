@@ -1,32 +1,46 @@
 ## CAN Library for Teensy 3.1 / 3.2, 3.5, 3.6
 
-### Compatibility with the ACAN2515 library
+### Compatibility with the ACANxxxx libraries
 
-This library is fully compatible with the MCP2515 CAN Controller ACAN2515 library https://github.com/pierremolinaro/acan2515, it uses a very similar API and the same `CANMessage` class for handling messages.
+This library is fully compatible with the MCP2515 CAN Controller ACAN2515, ACAN2515Tiny, ACAN2517 and ACAN2517FD libraries, it uses a very similar API and the same `CANMessage` class for handling messages.
 
-### Why I have written the ACAN library
+### Demo sketchs
 
-I started writing the ACAN library when I discovered the FlexCan library embedded in Teensyduino 1.36 cannot send remote frames, and does not receive any remote frame.
+Two sketches are provided for demonstrating remote frame sending and receiving capabilities:
 
-Furthermore, in one of my projects, I discovered that the FlexCan driver receive buffer was overflowing, and the library provides no way to be warned. The solution was to increase its size for this project, but the FlexCan driver receive buffer size is defined by a macro in the library header: when I change it, the new value is applied for all my other sketches.
+* **SendReceiveRemoteFramesWithFlexCan** sketch (in `flexcan-driver-example`) which uses the ACAN library, remote frames are sent and received;
+* **SendReceiveRemoteFrames** sketch (in `teensyduino-library/ACAN/examples`) which uses the FlexCan library, the first remote frame is sent, no remote frame is received.
 
-By performing a FlexCan library source code review, I found:
+Theses two sketches need to establish a CAN network that connects CAN0 and CAN1. You can use a single AND gate, as 74HC08, powered on 3.3V:
 
-1. The *Resynchronization Jump Width* is always 1;
-2. *Triple sampling* is never selected;
-3. The *rtr* field of *CAN\_filter\_t* type is useless, it is never used by the driver;
-4. The *timeout* field of *CAN\_message\_t* type is useless, it is never used by the driver.
+* AND inputs are CANT0X and CAN1TX;
+* AND outputs are CAN0RX and CAN1RX.
+
+### Memory Footprint
+
+Compiled with a CPU Speed of 180 MHz and Optimization *Smallest Code with LTO*.
+<table>
+    <tr>
+        <td>Sketch</td><td>Code size</td><td>Ram size</td><td>Dynamic Ram size</td>
+    </tr>
+    <tr>
+        <td>SendReceiveRemoteFramesWithFlexCan</td><td>9000 bytes</td><td>5032 bytes</td><td>0</td>
+    </tr>
+    <tr>
+        <td> SendReceiveRemoteFrames </td><td>9268 bytes</td><td>2940 bytes</td><td>1536 bytes</td>
+    </tr>
+</table>
 
 ### ACAN library description
 ACAN is a driver for the FlexCAN module built into the Teensy 3.1 / 3.2, 3.5, 3.6 microcontroller. It supports alternates pins. The two FlexCAN modules are supported on the Teensy 3.6.
 
 The driver supports many bit rates, as standard 62.5 kbit/s, 125 kbit/s, 250 kbit/s, 500 kbit/s, and 1 Mbit/s. An efficient CAN bit timing calculator finds settings for them, but also for exotic bit rates as 842 kbit/s. If the wished bit rate cannot be achieved, the `begin` method does not configure the hardware and returns an error code.
 
-> Driver API is fully described by the PDF file in the `extras` directory.
+> The Teensyduino library is the `teensyduino-library/ACAN` directory. Driver API is fully described by the PDF file in the `teensyduino-library/ACAN/extras` directory.
 
 ### Demo Sketch
 
-> The demo sketch is in the `examples/LoopBackDemo` directory.
+> The demo sketch is in the `teensyduino-library/ACAN/examples/LoopBackDemo` directory.
 
 Configuration is a four-step operation.
 
