@@ -23,7 +23,7 @@ class ACANPrimaryFilter {
   public: uint32_t mAcceptanceFilter ;
   public: ACANCallBackRoutine mCallBackRoutine ;
 
-  public: inline ACANPrimaryFilter (const ACANCallBackRoutine inCallBackRoutine) :  // Accept any frame
+  public: inline ACANPrimaryFilter (const ACANCallBackRoutine inCallBackRoutine = nullptr) :  // Accept any frame
   mFilterMask (0),
   mAcceptanceFilter (0),
   mCallBackRoutine (inCallBackRoutine) {
@@ -31,18 +31,18 @@ class ACANPrimaryFilter {
 
   public: ACANPrimaryFilter (const tFrameKind inKind,
                              const tFrameFormat inFormat, // Accept any identifier
-                             const ACANCallBackRoutine inCallBackRoutine = NULL) ;
+                             const ACANCallBackRoutine inCallBackRoutine = nullptr) ;
 
   public: ACANPrimaryFilter (const tFrameKind inKind,
                              const tFrameFormat inFormat,
                              const uint32_t inIdentifier,
-                             const ACANCallBackRoutine inCallBackRoutine = NULL) ;
+                             const ACANCallBackRoutine inCallBackRoutine = nullptr) ;
 
   public: ACANPrimaryFilter (const tFrameKind inKind,
                              const tFrameFormat inFormat,
                              const uint32_t inMask,
                              const uint32_t inAcceptance,
-                             const ACANCallBackRoutine inCallBackRoutine = NULL) ;
+                             const ACANCallBackRoutine inCallBackRoutine = nullptr) ;
 } ;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -52,9 +52,9 @@ class ACANSecondaryFilter {
   public: ACANCallBackRoutine mCallBackRoutine ;
 
   public: ACANSecondaryFilter (const tFrameKind inKind,
-                                const tFrameFormat inFormat,
-                                const uint32_t inIdentifier,
-                                const ACANCallBackRoutine inCallBackRoutine = NULL) ;
+                               const tFrameFormat inFormat,
+                               const uint32_t inIdentifier,
+                               const ACANCallBackRoutine inCallBackRoutine = nullptr) ;
 } ;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -75,9 +75,9 @@ class ACAN {
   public: static const uint32_t kCANBitConfiguration       = 1 << 18 ;
 
   public: uint32_t begin (const ACANSettings & inSettings,
-                          const ACANPrimaryFilter inPrimaryFilters [] = NULL ,
+                          const ACANPrimaryFilter inPrimaryFilters [] = nullptr ,
                           const uint32_t inPrimaryFilterCount = 0,
-                          const ACANSecondaryFilter inSecondaryFilters [] = NULL,
+                          const ACANSecondaryFilter inSecondaryFilters [] = nullptr,
                           const uint32_t inSecondaryFilterCount = 0) ;
 
 //--- end: stop CAN controller
@@ -93,7 +93,7 @@ class ACAN {
   public: inline bool available (void) const { return mReceiveBufferCount > 0 ; }
   public: bool receive (CANMessage & outMessage) ;
   public: typedef void (*tFilterMatchCallBack) (const uint32_t inFilterIndex) ;
-  public: bool dispatchReceivedMessage (const tFilterMatchCallBack inFilterMatchCallBack = NULL) ;
+  public: bool dispatchReceivedMessage (const tFilterMatchCallBack inFilterMatchCallBack = nullptr) ;
   public: inline uint32_t receiveBufferSize (void) const { return mReceiveBufferSize ; }
   public: inline uint32_t receiveBufferCount (void) const { return mReceiveBufferCount ; }
   public: inline uint32_t receiveBufferPeakCount (void) const { return mReceiveBufferPeakCount ; }
@@ -105,14 +105,14 @@ class ACAN {
   public: uint32_t transmitErrorCounter (void) const ;
 
 //--- Call back function array
-  private: ACANCallBackRoutine * mCallBackFunctionArray = NULL ;
+  private: ACANCallBackRoutine * mCallBackFunctionArray = nullptr ;
   private: uint32_t mCallBackFunctionArraySize = 0 ;
 
 //--- Base address
   private: const uint32_t mFlexcanBaseAddress ; // Initialized in constructor
 
 //--- Driver receive buffer
-  private: CANMessage * mReceiveBuffer = NULL ;
+  private: CANMessage * mReceiveBuffer = nullptr ;
   private: volatile uint32_t mReceiveBufferSize = 0 ;
   private: volatile uint32_t mReceiveBufferReadIndex = 0 ;
   private: volatile uint32_t mReceiveBufferCount = 0 ;
@@ -125,7 +125,7 @@ class ACAN {
   private : uint8_t mMaxPrimaryFilterCount = 0 ;
 
 //--- Driver transmit buffer
-  private: CANMessage * mTransmitBuffer = NULL ;
+  private: CANMessage * mTransmitBuffer = nullptr ;
   private: volatile uint32_t mTransmitBufferSize = 0 ;
   private: volatile uint32_t mTransmitBufferReadIndex = 0 ;
   private: volatile uint32_t mTransmitBufferCount = 0 ;

@@ -57,7 +57,7 @@ ACANSettings::ACANSettings (const uint32_t inWhishedBitRate,
     mBitRatePrescaler = (uint16_t) bestBRP ;
   //--- Compute PS2
     const uint32_t PS2 = 1 + 2 * bestTQCount / 7 ; // Always 2 <= PS2 <= 8
-    mPhaseSegment2 = (uint8_t) PS2 ;
+    mPhaseSegment2 = uint8_t (PS2) ;
   //--- Compute the remaining number of TQ once PS2 and SyncSeg are removed
     const uint32_t propSegmentPlusPhaseSegment1 = bestTQCount - PS2 - 1 /* Sync Seg */ ;
   //--- Set PS1 to half of remaining TQCount

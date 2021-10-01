@@ -306,20 +306,20 @@ void ACAN::end (void) {
   FLEXCANb_MCR (mFlexcanBaseAddress) |= (FLEXCAN_MCR_HALT);
   while (!(FLEXCANb_MCR (mFlexcanBaseAddress) & FLEXCAN_MCR_FRZ_ACK)) ;
 //--- Free receive buffer
-  delete [] mReceiveBuffer ; mReceiveBuffer = NULL ;
+  delete [] mReceiveBuffer ; mReceiveBuffer = nullptr ;
   mReceiveBufferSize = 0 ;
   mReceiveBufferReadIndex = 0 ;
   mReceiveBufferCount = 0 ;
   mReceiveBufferPeakCount = 0 ;
   mFlexcanRxFIFOFlags = 0 ;
 //--- Free transmit buffer
-  delete [] mTransmitBuffer ; mTransmitBuffer = NULL ;
+  delete [] mTransmitBuffer ; mTransmitBuffer = nullptr ;
   mTransmitBufferSize = 0 ;
   mTransmitBufferReadIndex = 0 ;
   mTransmitBufferCount = 0 ;
   mTransmitBufferPeakCount = 0 ;
 //--- Free callback function array
- delete [] mCallBackFunctionArray ; mCallBackFunctionArray = NULL ;
+ delete [] mCallBackFunctionArray ; mCallBackFunctionArray = nullptr ;
  mCallBackFunctionArraySize = 0 ;
 }
 
@@ -585,12 +585,12 @@ bool ACAN::dispatchReceivedMessage (const tFilterMatchCallBack inFilterMatchCall
   const bool hasReceived = receive (receivedMessage) ;
   if (hasReceived) {
     const uint32_t filterIndex = receivedMessage.idx ;
-    if (NULL != inFilterMatchCallBack) {
+    if (nullptr != inFilterMatchCallBack) {
       inFilterMatchCallBack (filterIndex) ;
     }
     if (filterIndex < mCallBackFunctionArraySize) {
       ACANCallBackRoutine callBackFunction = mCallBackFunctionArray [filterIndex] ;
-      if (NULL != callBackFunction) {
+      if (nullptr != callBackFunction) {
         callBackFunction (receivedMessage) ;
       }
     }
