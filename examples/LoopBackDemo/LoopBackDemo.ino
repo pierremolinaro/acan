@@ -1,6 +1,6 @@
 // LoopBackDemo
 
-// This demo runs on Tennsy 3.1 / 3.2, 3.5 and 3.6
+// This demo runs on Teensy 3.1 / 3.2, 3.5 and 3.6
 // The FlexCAN module is configured in loop back mode: it internally receives
 // every CAN frame it sends.
 
@@ -53,4 +53,3 @@ void loop () {
     Serial.println (gReceivedCount) ;
   }
 }
-
